@@ -1,1313 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>News You Can Use</title>
-<meta name="description" content="Personalized news intelligence for professionals, learners, and curious minds." />
-
-<!-- Favicon SVG inline -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0f'/%3E%3Ctext x='4' y='24' font-size='22' font-family='Georgia,serif' fill='%2300d4ff'%3EN%3C/text%3E%3Ccircle cx='26' cy='8' r='4' fill='%2300d4ff'/%3E%3C/svg%3E" />
-
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
+<meta name="description" content="Personalized news intelligence for professionals, learners, and curious minds."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0f'/%3E%3Ctext x='4' y='24' font-size='22' font-family='Georgia,serif' fill='%2300d4ff'%3EN%3C/text%3E%3Ccircle cx='26' cy='8' r='4' fill='%2300d4ff'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  /* ── RESET & BASE ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:        #09090f;
-    --bg2:       #101018;
-    --bg3:       #16161f;
-    --border:    rgba(255,255,255,0.07);
-    --text:      #e8e8f0;
-    --muted:     #6b6b80;
-    --accent:    #00d4ff;
-    --accent2:   #7c5cfc;
-    --accent3:   #ff6b6b;
-    --gold:      #f5c842;
-    --green:     #3dffc0;
-    --radius:    12px;
-    --font-head: 'Playfair Display', Georgia, serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'DM Mono', monospace;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* grain overlay */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    opacity: 0.4;
-  }
-
-  /* ── LAYOUT ── */
-  .app { position: relative; z-index: 1; }
-
-  /* ── HEADER ── */
-  header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(9,9,15,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px;
-  }
-
-  .logo {
-    display: flex; align-items: center; gap: 10px;
-    text-decoration: none; color: inherit;
-  }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-head);
-    font-weight: 900; font-size: 18px;
-    color: #fff;
-    position: relative;
-    flex-shrink: 0;
-  }
-  .logo-icon::after {
-    content: '';
-    position: absolute; top: -1px; right: -1px;
-    width: 8px; height: 8px;
-    background: var(--accent3);
-    border-radius: 50%;
-    border: 2px solid var(--bg);
-  }
-  .logo-text {
-    display: flex; flex-direction: column; line-height: 1.1;
-  }
-  .logo-text strong {
-    font-family: var(--font-head);
-    font-size: 15px; font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-  .logo-text span {
-    font-size: 10px; color: var(--muted);
-    font-family: var(--font-mono);
-    letter-spacing: 0.12em; text-transform: uppercase;
-  }
-
-  .header-right {
-    display: flex; align-items: center; gap: 12px;
-  }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-family: var(--font-body);
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    font-weight: 600;
-  }
-  .btn-primary:hover { background: #22dcff; transform: translateY(-1px); }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
-
-  /* ── ONBOARDING MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center;
-    padding: 1rem;
-    animation: fadeIn 0.3s ease;
-  }
-  .modal-overlay.hidden { display: none; }
-
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-  .modal {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2.5rem;
-    max-width: 560px; width: 100%;
-    animation: slideUp 0.35s ease;
-    max-height: 90vh; overflow-y: auto;
-  }
-  .modal-step { display: none; }
-  .modal-step.active { display: block; }
-
-  .modal h2 {
-    font-family: var(--font-head);
-    font-size: 1.8rem; margin-bottom: 0.4rem;
-  }
-  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 1.5rem; }
-
-  .modal label {
-    display: block; font-size: 12px; font-weight: 500;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.1em; margin-bottom: 6px;
-  }
-  .modal input, .modal select {
-    width: 100%; padding: 11px 14px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text);
-    font-family: var(--font-body); font-size: 14px;
-    margin-bottom: 1.2rem;
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .modal input:focus, .modal select:focus {
-    border-color: var(--accent);
-  }
-  .modal select option { background: var(--bg3); }
-
-  /* Category grid in onboarding */
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 1.5rem;
-  }
-  .cat-chip {
-    padding: 10px 8px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    text-align: center;
-    transition: all 0.18s;
-    background: var(--bg3);
-    user-select: none;
-  }
-  .cat-chip .cat-icon { font-size: 18px; display: block; margin-bottom: 3px; }
-  .cat-chip:hover { border-color: rgba(255,255,255,0.2); }
-  .cat-chip.selected {
-    border-color: var(--accent);
-    background: rgba(0,212,255,0.08);
-    color: var(--accent);
-  }
-
-  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 0.5rem; }
-  .step-dots {
-    display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem;
-  }
-  .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--border); transition: all 0.3s;
-  }
-  .dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
-
-  /* ── MAIN LAYOUT ── */
-  main { display: flex; min-height: calc(100vh - 64px); }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 220px; flex-shrink: 0;
-    border-right: 1px solid var(--border);
-    padding: 1.5rem 0;
-    position: sticky; top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-  }
-
-  .sidebar-section { margin-bottom: 1.5rem; }
-  .sidebar-label {
-    font-size: 10px; font-weight: 600;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding: 0 1.25rem; margin-bottom: 6px;
-  }
-  .sidebar-link {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 1.25rem;
-    cursor: pointer;
-    font-size: 13.5px;
-    color: var(--muted);
-    border-left: 2px solid transparent;
-    transition: all 0.18s;
-    white-space: nowrap;
-  }
-  .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
-  .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,255,0.05); }
-  .sidebar-link .icon { font-size: 15px; width: 18px; text-align: center; }
-
-  /* ── CONTENT AREA ── */
-  .content {
-    flex: 1;
-    padding: 2rem 2.5rem;
-    max-width: 960px;
-  }
-
-  /* ── PAGE HEADER ── */
-  .page-header {
-    margin-bottom: 2rem;
-    animation: slideUp 0.4s ease 0.1s both;
-  }
-  .page-header h1 {
-    font-family: var(--font-head);
-    font-size: 2rem; font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .page-header p { color: var(--muted); font-size: 14px; }
-
-  /* ── SEARCH BAR ── */
-  .search-bar {
-    display: flex; gap: 10px;
-    margin-bottom: 2rem;
-    animation: slideUp 0.4s ease 0.15s both;
-  }
-  .search-input-wrap {
-    flex: 1; position: relative;
-  }
-  .search-input-wrap input {
-    width: 100%; padding: 11px 14px 11px 40px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text);
-    font-family: var(--font-body); font-size: 14px;
-    outline: none; transition: border-color 0.2s;
-  }
-  .search-input-wrap input:focus { border-color: var(--accent); }
-  .search-icon {
-    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-    color: var(--muted); font-size: 16px; pointer-events: none;
-  }
-
-  /* ── FEATURED / HERO CARD ── */
-  .featured-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    position: relative; overflow: hidden;
-    animation: slideUp 0.4s ease 0.2s both;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  .featured-card:hover { border-color: rgba(255,255,255,0.15); }
-  .featured-card::before {
-    content: '';
-    position: absolute; top: 0; right: 0;
-    width: 300px; height: 300px;
-    background: radial-gradient(circle at center, rgba(0,212,255,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .featured-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 10px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.12em; color: var(--accent);
-    font-family: var(--font-mono);
-    margin-bottom: 0.75rem;
-  }
-  .featured-badge::before { content: '●'; }
-  .featured-card h2 {
-    font-family: var(--font-head);
-    font-size: 1.5rem; font-weight: 700;
-    margin-bottom: 0.75rem; line-height: 1.3;
-  }
-  .featured-card .summary { color: var(--muted); font-size: 14px; line-height: 1.65; margin-bottom: 1rem; }
-  .featured-meta {
-    display: flex; align-items: center; gap: 16px;
-    font-size: 12px; color: var(--muted);
-  }
-  .featured-meta .source { color: var(--text); font-weight: 500; }
-  .read-more {
-    display: inline-flex; align-items: center; gap: 5px;
-    color: var(--accent); font-size: 13px; font-weight: 500;
-    text-decoration: none; transition: gap 0.2s;
-    cursor: pointer; background: none; border: none;
-  }
-  .read-more:hover { gap: 8px; }
-
-  /* ── SECTION TITLE ── */
-  .section-title {
-    font-family: var(--font-head);
-    font-size: 1.1rem; font-weight: 700;
-    margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after {
-    content: ''; flex: 1; height: 1px;
-    background: var(--border);
-  }
-
-  /* ── ARTICLE GRID ── */
-  .article-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    margin-bottom: 2.5rem;
-  }
-
-  .article-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    animation: slideUp 0.4s ease both;
-    display: flex; flex-direction: column;
-    position: relative;
-  }
-  .article-card:hover {
-    border-color: rgba(255,255,255,0.15);
-    transform: translateY(-2px);
-    background: var(--bg3);
-  }
-
-  .card-top {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    margin-bottom: 0.75rem;
-  }
-  .cat-tag {
-    font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    font-family: var(--font-mono);
-    padding: 3px 8px; border-radius: 4px;
-  }
-  .bookmark-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 15px;
-    transition: color 0.2s; padding: 0;
-    line-height: 1;
-  }
-  .bookmark-btn:hover, .bookmark-btn.saved { color: var(--gold); }
-
-  .article-card h3 {
-    font-family: var(--font-head);
-    font-size: 1rem; font-weight: 700;
-    line-height: 1.35; margin-bottom: 0.5rem;
-  }
-  .article-card .summary {
-    font-size: 13px; color: var(--muted);
-    line-height: 1.55; flex: 1; margin-bottom: 1rem;
-  }
-  .card-footer {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 11px; color: var(--muted);
-    margin-top: auto; padding-top: 0.75rem;
-    border-top: 1px solid var(--border);
-  }
-  .read-time { display: flex; align-items: center; gap: 4px; }
-
-  /* ── CATEGORY COLORS ── */
-  .tag-tech       { background: rgba(0,212,255,0.12); color: var(--accent); }
-  .tag-finance    { background: rgba(61,255,192,0.10); color: var(--green); }
-  .tag-science    { background: rgba(124,92,252,0.12); color: var(--accent2); }
-  .tag-career     { background: rgba(245,200,66,0.10); color: var(--gold); }
-  .tag-culture    { background: rgba(255,107,107,0.10); color: var(--accent3); }
-  .tag-travel     { background: rgba(0,212,255,0.08); color: #5bb8ff; }
-  .tag-health     { background: rgba(61,255,192,0.08); color: #52d9a0; }
-  .tag-education  { background: rgba(245,200,66,0.08); color: #e8b84b; }
-  .tag-history    { background: rgba(255,107,107,0.08); color: #e07878; }
-  .tag-economy    { background: rgba(61,255,192,0.10); color: var(--green); }
-  .tag-sports     { background: rgba(255,107,107,0.12); color: var(--accent3); }
-  .tag-media      { background: rgba(124,92,252,0.10); color: var(--accent2); }
-  .tag-language   { background: rgba(0,212,255,0.10); color: var(--accent); }
-  .tag-default    { background: rgba(255,255,255,0.06); color: var(--muted); }
-
-  /* ── LOADING STATE ── */
-  .loading-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px; margin-bottom: 2.5rem;
-  }
-  .skeleton {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1.25rem;
-    animation: pulse 1.5s ease infinite;
-  }
-  .skeleton-line {
-    height: 12px; background: var(--bg3); border-radius: 4px; margin-bottom: 8px;
-  }
-  .skeleton-line.short { width: 60%; }
-  .skeleton-line.title { height: 18px; margin-bottom: 12px; }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center; padding: 4rem 2rem;
-    color: var(--muted);
-  }
-  .empty-state .big-icon { font-size: 48px; margin-bottom: 1rem; }
-  .empty-state h3 { font-family: var(--font-head); font-size: 1.3rem; color: var(--text); margin-bottom: 0.5rem; }
-
-  /* ── ARTICLE DETAIL PANEL ── */
-  .detail-panel {
-    position: fixed; inset: 0; z-index: 150;
-    display: flex; align-items: flex-start; justify-content: flex-end;
-    pointer-events: none;
-  }
-  .detail-panel.open { pointer-events: all; }
-  .detail-backdrop {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.5);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .detail-panel.open .detail-backdrop { opacity: 1; }
-  .detail-drawer {
-    position: relative; z-index: 1;
-    width: min(560px, 100vw);
-    height: 100vh;
-    background: var(--bg2);
-    border-left: 1px solid var(--border);
-    overflow-y: auto;
-    transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-    padding: 2rem;
-  }
-  .detail-panel.open .detail-drawer { transform: translateX(0); }
-  .detail-close {
-    position: sticky; top: 0;
-    display: flex; justify-content: flex-end;
-    margin-bottom: 1rem;
-  }
-  .close-btn {
-    background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text); border-radius: 8px;
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 18px;
-    transition: background 0.2s;
-  }
-  .close-btn:hover { background: rgba(255,255,255,0.08); }
-  .detail-cat { margin-bottom: 0.75rem; }
-  .detail-title {
-    font-family: var(--font-head);
-    font-size: 1.6rem; font-weight: 700;
-    line-height: 1.3; margin-bottom: 1rem;
-  }
-  .detail-meta {
-    display: flex; flex-wrap: wrap; gap: 12px;
-    font-size: 12px; color: var(--muted);
-    margin-bottom: 1.5rem; padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .detail-meta strong { color: var(--text); }
-  .detail-body { font-size: 15px; line-height: 1.75; color: #ccccd8; }
-  .detail-body p { margin-bottom: 1.2rem; }
-  .detail-body h4 { font-family: var(--font-head); font-size: 1.1rem; margin: 1.5rem 0 0.5rem; color: var(--text); }
-  .detail-actions {
-    display: flex; gap: 10px; margin-top: 2rem;
-    padding-top: 1.5rem; border-top: 1px solid var(--border);
-  }
-
-  /* ── AI INSIGHT BOX ── */
-  .ai-insight {
-    background: rgba(0,212,255,0.05);
-    border: 1px solid rgba(0,212,255,0.15);
-    border-radius: 10px; padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
-  }
-  .ai-insight-label {
-    font-size: 10px; font-weight: 600;
-    color: var(--accent); text-transform: uppercase;
-    letter-spacing: 0.12em; font-family: var(--font-mono);
-    margin-bottom: 6px; display: flex; align-items: center; gap: 5px;
-  }
-  .ai-insight p { font-size: 13px; color: var(--muted); line-height: 1.6; }
-
-  /* ── TRENDING SIDEBAR ── */
-  .right-rail {
-    width: 260px; flex-shrink: 0;
-    padding: 2rem 1.5rem 2rem 0;
-    position: sticky; top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-  }
-  .trending-item {
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: color 0.15s;
-  }
-  .trending-item:last-child { border-bottom: none; }
-  .trending-item:hover h4 { color: var(--accent); }
-  .trending-num { font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 3px; }
-  .trending-item h4 { font-size: 13px; font-weight: 600; line-height: 1.35; }
-  .trending-item .t-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
-
-  .profile-card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1.1rem;
-    margin-bottom: 1.5rem;
-  }
-  .profile-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-  .profile-card p { font-size: 11px; color: var(--muted); }
-  .profile-cats { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-  .mini-tag {
-    font-size: 10px; padding: 2px 7px;
-    border-radius: 4px; font-family: var(--font-mono);
-    background: rgba(255,255,255,0.06); color: var(--muted);
-  }
-
-  /* ── NOTIFICATION TOAST ── */
-  .toast {
-    position: fixed; bottom: 2rem; right: 2rem; z-index: 300;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 18px;
-    font-size: 13px; color: var(--text);
-    display: flex; align-items: center; gap: 8px;
-    transform: translateY(100px); opacity: 0;
-    transition: all 0.3s;
-    pointer-events: none;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast-icon { color: var(--gold); }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-
-  /* ── BOOKMARKS PAGE ── */
-  .page-section { display: none; }
-  .page-section.active { display: block; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .right-rail { display: none; }
-  }
-  @media (max-width: 640px) {
-    .sidebar { display: none; }
-    .content { padding: 1.25rem; }
-    .cat-grid { grid-template-columns: repeat(2, 1fr); }
-    .logo-text span { display: none; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f;--bg2:#101018;--bg3:#16161f;
+  --border:rgba(255,255,255,0.07);
+  --text:#e8e8f0;--muted:#6b6b80;
+  --accent:#00d4ff;--accent2:#7c5cfc;--accent3:#ff6b6b;
+  --gold:#f5c842;--green:#3dffc0;
+  --radius:12px;
+  --font-head:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;opacity:.5}
+.app{position:relative;z-index:1}
+header{position:sticky;top:0;z-index:100;background:rgba(9,9,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;cursor:pointer}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:900;font-size:17px;color:#fff;position:relative;flex-shrink:0}
+.logo-icon::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--accent3);border-radius:50%;border:2px solid var(--bg)}
+.logo-text strong{font-family:var(--font-head);font-size:14px;font-weight:700;display:block}
+.logo-text span{font-size:10px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn-primary{background:var(--accent);color:#000;font-weight:600}
+.btn-primary:hover{background:#22dcff;transform:translateY(-1px)}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.87);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .3s ease}
+.modal-overlay.hidden{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.25rem;max-width:530px;width:100%;animation:slideUp .35s ease;max-height:90vh;overflow-y:auto}
+.modal-step{display:none}
+.modal-step.active{display:block}
+.modal h2{font-family:var(--font-head);font-size:1.7rem;margin-bottom:.35rem}
+.modal-step>p{color:var(--muted);font-size:13.5px;margin-bottom:1.4rem}
+.field-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.modal input,.modal select{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:14px;margin-bottom:1rem;outline:none;transition:border-color .2s}
+.modal input:focus,.modal select:focus{border-color:var(--accent)}
+.modal select option{background:var(--bg3)}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:1.4rem}
+.cat-chip{padding:9px 6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;text-align:center;transition:all .16s;background:var(--bg3);user-select:none}
+.cat-chip .ci{font-size:16px;display:block;margin-bottom:2px}
+.cat-chip:hover{border-color:rgba(255,255,255,.2)}
+.cat-chip.selected{border-color:var(--accent);background:rgba(0,212,255,.08);color:var(--accent)}
+.step-dots{display:flex;gap:6px;align-items:center;margin-bottom:1.4rem}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .3s}
+.dot.active{background:var(--accent);width:20px;border-radius:3px}
+.modal-footer{display:flex;justify-content:flex-end;gap:9px;margin-top:.5rem}
+.depth-opt{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--bg3);transition:border-color .18s}
+.depth-opt:hover{border-color:rgba(255,255,255,.2)}
+.depth-opt input[type=radio]{accent-color:var(--accent);width:auto;margin:0;background:none;border:none}
+.depth-opt strong{display:block;font-size:13px;margin-bottom:1px}
+.depth-opt span{font-size:11px;color:var(--muted)}
+main{display:flex;min-height:calc(100vh - 60px)}
+.sidebar{width:205px;flex-shrink:0;border-right:1px solid var(--border);padding:1.25rem 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.sidebar-section{margin-bottom:1.25rem}
+.sidebar-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.13em;padding:0 1rem;margin-bottom:5px}
+.sidebar-link{display:flex;align-items:center;gap:9px;padding:8px 1rem;cursor:pointer;font-size:13px;color:var(--muted);border-left:2px solid transparent;transition:all .16s;white-space:nowrap}
+.sidebar-link:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,.05)}
+.sidebar-link .ic{font-size:14px;width:18px;text-align:center}
+.content{flex:1;padding:1.75rem 1.75rem;max-width:920px;min-width:0}
+.right-rail{width:245px;flex-shrink:0;padding:1.75rem 1.25rem 1.75rem 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.page-header{margin-bottom:1.4rem;animation:slideUp .4s ease .05s both}
+.page-header h1{font-family:var(--font-head);font-size:1.8rem;font-weight:700;margin-bottom:3px}
+.page-header p{color:var(--muted);font-size:13px}
+.status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;animation:slideUp .4s ease .1s both;gap:10px}
+.search-wrap{position:relative;flex:1;max-width:380px}
+.search-wrap input{width:100%;padding:9px 13px 9px 35px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.source-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(0,212,255,.1);color:var(--accent);font-family:var(--font-mono);white-space:nowrap}
+.feed-count{font-size:11px;color:var(--muted);white-space:nowrap}
+.featured-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.6rem;margin-bottom:1.6rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;animation:slideUp .4s ease .15s both}
+.featured-card:hover{border-color:rgba(255,255,255,.14)}
+.featured-card::before{content:'';position:absolute;top:0;right:0;width:260px;height:260px;background:radial-gradient(circle,rgba(0,212,255,.07) 0%,transparent 70%);pointer-events:none}
+.feat-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-family:var(--font-mono);margin-bottom:.55rem;display:flex;align-items:center;gap:5px}
+.feat-badge::before{content:'●'}
+.featured-card h2{font-family:var(--font-head);font-size:1.35rem;font-weight:700;margin-bottom:.55rem;line-height:1.3}
+.feat-summary{color:var(--muted);font-size:13.5px;line-height:1.65;margin-bottom:.85rem;max-width:660px}
+.feat-meta{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.feat-source{color:var(--text);font-weight:600}
+.read-more{color:var(--accent);font-size:12px;font-weight:500;background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:gap .18s;padding:0}
+.read-more:hover{gap:7px}
+.section-title{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:.85rem;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.article-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:13px;margin-bottom:2rem}
+.article-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.05rem;cursor:pointer;transition:all .2s;animation:slideUp .4s ease both;display:flex;flex-direction:column}
+.article-card:hover{border-color:rgba(255,255,255,.14);transform:translateY(-2px);background:var(--bg3)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
+.cat-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;font-family:var(--font-mono);padding:3px 7px;border-radius:4px;flex-shrink:0}
+.bm-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;transition:color .18s;padding:0;line-height:1;flex-shrink:0;margin-left:6px}
+.bm-btn:hover,.bm-btn.saved{color:var(--gold)}
+.article-card h3{font-family:var(--font-head);font-size:.93rem;font-weight:700;line-height:1.35;margin-bottom:.42rem}
+.card-summary{font-size:12.5px;color:var(--muted);line-height:1.55;flex:1;margin-bottom:.75rem}
+.card-footer{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);padding-top:.6rem;border-top:1px solid var(--border);margin-top:auto}
+.tag-tech{background:rgba(0,212,255,.1);color:var(--accent)}
+.tag-finance{background:rgba(61,255,192,.1);color:var(--green)}
+.tag-science{background:rgba(124,92,252,.12);color:var(--accent2)}
+.tag-career{background:rgba(245,200,66,.1);color:var(--gold)}
+.tag-culture{background:rgba(255,107,107,.1);color:var(--accent3)}
+.tag-travel{background:rgba(91,184,255,.1);color:#5bb8ff}
+.tag-health{background:rgba(61,255,192,.08);color:#52d9a0}
+.tag-education{background:rgba(245,200,66,.08);color:#e8b84b}
+.tag-history{background:rgba(255,107,107,.08);color:#e07878}
+.tag-economy{background:rgba(61,255,192,.1);color:var(--green)}
+.tag-sports{background:rgba(255,107,107,.12);color:var(--accent3)}
+.tag-media{background:rgba(124,92,252,.1);color:var(--accent2)}
+.tag-language{background:rgba(0,212,255,.1);color:var(--accent)}
+.tag-ai{background:rgba(0,212,255,.1);color:var(--accent)}
+.tag-law{background:rgba(245,200,66,.1);color:var(--gold)}
+.tag-default{background:rgba(255,255,255,.06);color:var(--muted)}
+.skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:13px;margin-bottom:2rem}
+.skeleton{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.05rem;animation:pulse 1.6s ease infinite}
+.skel-line{height:11px;background:var(--bg3);border-radius:4px;margin-bottom:8px}
+.skel-line.s{width:55%}.skel-line.t{height:16px;margin-bottom:10px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.empty{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+.empty .ei{font-size:42px;margin-bottom:.8rem}
+.empty h3{font-family:var(--font-head);font-size:1.2rem;color:var(--text);margin-bottom:.35rem}
+.detail-panel{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-start;justify-content:flex-end;pointer-events:none}
+.detail-panel.open{pointer-events:all}
+.detail-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s}
+.detail-panel.open .detail-backdrop{opacity:1}
+.detail-drawer{position:relative;z-index:1;width:min(560px,100vw);height:100vh;background:var(--bg2);border-left:1px solid var(--border);overflow-y:auto;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);padding:1.6rem}
+.detail-panel.open .detail-drawer{transform:translateX(0)}
+.close-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:background .2s;margin-left:auto;margin-bottom:1rem;flex-shrink:0}
+.close-btn:hover{background:rgba(255,255,255,.08)}
+.detail-title{font-family:var(--font-head);font-size:1.45rem;font-weight:700;line-height:1.3;margin-bottom:.8rem}
+.detail-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
+.detail-meta a{color:var(--accent);text-decoration:none}
+.detail-meta a:hover{text-decoration:underline}
+.ai-box{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-radius:9px;padding:.85rem 1rem;margin-bottom:1.2rem}
+.ai-label{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;font-family:var(--font-mono);margin-bottom:5px}
+.ai-box p{font-size:13px;color:var(--muted);line-height:1.6}
+.detail-body{font-size:14px;line-height:1.75;color:#c4c4d0}
+.detail-body p{margin-bottom:1rem}
+.detail-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid var(--border)}
+.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.95rem;margin-bottom:1.2rem}
+.profile-card h4{font-size:13px;font-weight:600;margin-bottom:2px}
+.profile-card p{font-size:11px;color:var(--muted)}
+.profile-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.mini-tag{font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--muted)}
+.trending-item{padding:.7rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .15s}
+.trending-item:last-child{border-bottom:none}
+.trending-item:hover h4{color:var(--accent)}
+.trending-num{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:2px}
+.trending-item h4{font-size:12.5px;font-weight:600;line-height:1.35}
+.trending-item .tm{font-size:10px;color:var(--muted);margin-top:2px}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px 16px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;transform:translateY(70px);opacity:0;transition:all .28s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.page-section{display:none}
+.page-section.active{display:block}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:3px}
+@media(max-width:900px){.right-rail{display:none}}
+@media(max-width:640px){.sidebar{display:none}.content{padding:1rem}.cat-grid{grid-template-columns:repeat(2,1fr)}.logo-text span{display:none}}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- ══════════════════════ ONBOARDING MODAL ══════════════════════ -->
-  <div class="modal-overlay" id="onboardingModal">
-    <div class="modal">
-      <!-- Step 1: Name & Role -->
-      <div class="modal-step active" id="step1">
-        <div class="step-dots">
-          <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-        <div style="font-size:32px;margin-bottom:0.5rem;">👋</div>
-        <h2>Welcome to News<br>You Can Use</h2>
-        <p>Let's personalize your intelligence feed. This takes 60 seconds.</p>
-        <label>Your name</label>
-        <input type="text" id="userName" placeholder="e.g. Adam" />
-        <label>Your profession or role</label>
-        <input type="text" id="userRole" placeholder="e.g. Project Manager, HR Director, Student…" />
-        <label>What describes you best?</label>
-        <select id="userType">
-          <option value="">Select one…</option>
-          <option value="professional">Working Professional</option>
-          <option value="student">Student</option>
-          <option value="entrepreneur">Entrepreneur / Founder</option>
-          <option value="learner">Curious Lifelong Learner</option>
-          <option value="executive">Executive / Leader</option>
-        </select>
-        <div class="modal-footer">
-          <button class="btn btn-primary" onclick="goStep(2)">Continue →</button>
-        </div>
-      </div>
-
-      <!-- Step 2: Category selection -->
-      <div class="modal-step" id="step2">
-        <div class="step-dots">
-          <div class="dot"></div><div class="dot active"></div><div class="dot"></div>
-        </div>
-        <h2>Choose your topics</h2>
-        <p>Pick 3 or more — your feed will be built around these.</p>
-        <div class="cat-grid" id="catGrid">
-          <!-- populated by JS -->
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
-          <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
-        </div>
-      </div>
-
-      <!-- Step 3: Depth preference -->
-      <div class="modal-step" id="step3">
-        <div class="step-dots">
-          <div class="dot"></div><div class="dot"></div><div class="dot active"></div>
-        </div>
-        <h2>How deep do you<br>want to go?</h2>
-        <p>This shapes how detailed your article summaries and insights will be.</p>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
-          <label class="cat-chip" style="text-align:left;padding:12px 14px;display:flex;align-items:center;gap:10px;width:100%">
-            <input type="radio" name="depth" value="quick" style="width:auto;margin:0;background:none;border:none" />
-            <span>
-              <strong style="display:block;font-size:13px">Quick Scan</strong>
-              <span style="font-size:12px;color:var(--muted)">2–3 sentence summaries, fast reading</span>
-            </span>
-          </label>
-          <label class="cat-chip" style="text-align:left;padding:12px 14px;display:flex;align-items:center;gap:10px;width:100%">
-            <input type="radio" name="depth" value="standard" checked style="width:auto;margin:0;background:none;border:none" />
-            <span>
-              <strong style="display:block;font-size:13px">Standard</strong>
-              <span style="font-size:12px;color:var(--muted)">Full summaries with context & takeaways</span>
-            </span>
-          </label>
-          <label class="cat-chip" style="text-align:left;padding:12px 14px;display:flex;align-items:center;gap:10px;width:100%">
-            <input type="radio" name="depth" value="deep" style="width:auto;margin:0;background:none;border:none" />
-            <span>
-              <strong style="display:block;font-size:13px">Deep Dive</strong>
-              <span style="font-size:12px;color:var(--muted)">Detailed breakdowns with professional insights</span>
-            </span>
-          </label>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
-          <button class="btn btn-primary" onclick="saveProfile()">Build My Feed ✦</button>
-        </div>
+<!-- ONBOARDING -->
+<div class="modal-overlay" id="onboardingModal">
+  <div class="modal">
+    <div class="modal-step active" id="step1">
+      <div class="step-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+      <div style="font-size:28px;margin-bottom:.4rem">👋</div>
+      <h2>Welcome to<br>News You Can Use</h2>
+      <p>Personalize your intelligence feed in 60 seconds.</p>
+      <label class="field-label">Your name</label>
+      <input type="text" id="userName" placeholder="e.g. Adam"/>
+      <label class="field-label">Your profession or role</label>
+      <input type="text" id="userRole" placeholder="e.g. Project Manager, HR Director, Student…"/>
+      <label class="field-label">What describes you best?</label>
+      <select id="userType">
+        <option value="">Select one…</option>
+        <option value="professional">Working Professional</option>
+        <option value="student">Student</option>
+        <option value="entrepreneur">Entrepreneur / Founder</option>
+        <option value="learner">Curious Lifelong Learner</option>
+        <option value="executive">Executive / Leader</option>
+      </select>
+      <div class="modal-footer"><button class="btn btn-primary" onclick="goStep(2)">Continue →</button></div>
+    </div>
+    <div class="modal-step" id="step2">
+      <div class="step-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+      <h2>Choose your topics</h2>
+      <p>Pick 2 or more — your feed is built around these.</p>
+      <div class="cat-grid" id="catGrid"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
       </div>
     </div>
-  </div>
-
-  <!-- ══════════════════════ HEADER ══════════════════════ -->
-  <header>
-    <a class="logo" href="#" onclick="showPage('feed')">
-      <div class="logo-icon">N</div>
-      <div class="logo-text">
-        <strong>News You Can Use</strong>
-        <span>Intelligence Feed</span>
-      </div>
-    </a>
-    <div class="header-right">
-      <button class="btn btn-ghost btn-sm" onclick="showPage('bookmarks')">🔖 Saved</button>
-      <button class="btn btn-ghost btn-sm" onclick="openOnboarding()">⚙ Preferences</button>
-      <button class="btn btn-primary btn-sm" onclick="refreshFeed()">↻ Refresh</button>
-    </div>
-  </header>
-
-  <!-- ══════════════════════ MAIN ══════════════════════ -->
-  <main>
-    <!-- LEFT SIDEBAR -->
-    <aside class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">My Feed</div>
-        <div class="sidebar-link active" onclick="filterCategory('all',this)">
-          <span class="icon">◉</span> All Topics
-        </div>
-        <div class="sidebar-link" onclick="filterCategory('trending',this)">
-          <span class="icon">🔥</span> Trending
-        </div>
-        <div class="sidebar-link" onclick="showPage('bookmarks')">
-          <span class="icon">🔖</span> Saved Articles
-        </div>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">Categories</div>
-        <div id="sidebarCats"><!-- populated by JS --></div>
-      </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="content">
-      <!-- FEED PAGE -->
-      <div class="page-section active" id="feedPage">
-        <div class="page-header">
-          <h1 id="feedTitle">Your Intelligence Feed</h1>
-          <p id="feedSubtitle">Powered by AI · Personalized for you</p>
-        </div>
-
-        <div class="search-bar">
-          <div class="search-input-wrap">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search your feed…" oninput="handleSearch(this.value)" />
-          </div>
-          <button class="btn btn-ghost" onclick="refreshFeed()" style="flex-shrink:0">↻ Refresh Feed</button>
-        </div>
-
-        <!-- Featured Article -->
-        <div id="featuredArea"></div>
-
-        <!-- Article Sections -->
-        <div id="articlesArea"></div>
-      </div>
-
-      <!-- BOOKMARKS PAGE -->
-      <div class="page-section" id="bookmarksPage">
-        <div class="page-header">
-          <h1>Saved Articles</h1>
-          <p>Your personal reading list</p>
-        </div>
-        <div id="bookmarksArea"></div>
+    <div class="modal-step" id="step3">
+      <div class="step-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+      <h2>Reading depth?</h2>
+      <p>Shapes how much context appears per article.</p>
+      <label class="depth-opt"><input type="radio" name="depth" value="quick"/>
+        <div><strong>Quick Scan</strong><span>Headlines + 1-line summaries</span></div></label>
+      <label class="depth-opt"><input type="radio" name="depth" value="standard" checked/>
+        <div><strong>Standard</strong><span>Full summaries with context</span></div></label>
+      <label class="depth-opt"><input type="radio" name="depth" value="deep"/>
+        <div><strong>Deep Dive</strong><span>Extended reading, full body text</span></div></label>
+      <div class="modal-footer" style="margin-top:1rem">
+        <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+        <button class="btn btn-primary" onclick="saveProfile()">Build My Feed ✦</button>
       </div>
     </div>
-
-    <!-- RIGHT RAIL -->
-    <aside class="right-rail">
-      <div id="profileCard"></div>
-      <div class="section-title" style="font-size:0.9rem">Trending</div>
-      <div id="trendingArea"></div>
-    </aside>
-  </main>
-
-  <!-- DETAIL DRAWER -->
-  <div class="detail-panel" id="detailPanel">
-    <div class="detail-backdrop" onclick="closeDetail()"></div>
-    <div class="detail-drawer" id="detailDrawer">
-      <div class="detail-close">
-        <button class="close-btn" onclick="closeDetail()">✕</button>
-      </div>
-      <div id="detailContent"></div>
-    </div>
-  </div>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast">
-    <span class="toast-icon">✦</span>
-    <span id="toastMsg">Article saved!</span>
   </div>
 </div>
 
+<!-- HEADER -->
+<header>
+  <div class="logo" onclick="showPage('feed')">
+    <div class="logo-icon">N</div>
+    <div class="logo-text"><strong>News You Can Use</strong><span>Intelligence Feed</span></div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost" onclick="showPage('bookmarks')">🔖 Saved</button>
+    <button class="btn btn-ghost" onclick="openOnboarding()">⚙ Prefs</button>
+    <button class="btn btn-primary" onclick="refreshFeed()">↻ Refresh</button>
+  </div>
+</header>
+
+<main>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <div class="sidebar-link active" id="nav-all" onclick="filterCat('all',this)"><span class="ic">◉</span>All Topics</div>
+      <div class="sidebar-link" onclick="showPage('bookmarks')"><span class="ic">🔖</span>Saved Articles</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Topics</div>
+      <div id="sidebarCats"></div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="page-section active" id="feedPage">
+      <div class="page-header">
+        <h1 id="feedTitle">Your Intelligence Feed</h1>
+        <p id="feedSubtitle">Real news · Trusted RSS sources · Personalized</p>
+      </div>
+      <div class="status-bar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="Search articles…" oninput="handleSearch(this.value)"/></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="feed-count" id="feedCount"></span>
+          <span class="source-badge" id="sourceLabel">Loading…</span>
+        </div>
+      </div>
+      <div id="featuredArea"></div>
+      <div id="articlesArea"></div>
+    </div>
+    <div class="page-section" id="bookmarksPage">
+      <div class="page-header"><h1>Saved Articles</h1><p>Your personal reading list</p></div>
+      <div id="bookmarksArea"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT RAIL -->
+  <aside class="right-rail">
+    <div id="profileCard"></div>
+    <div class="section-title" style="font-size:.88rem">Trending</div>
+    <div id="trendingArea"></div>
+  </aside>
+</main>
+
+<!-- DETAIL DRAWER -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-backdrop" onclick="closeDetail()"></div>
+  <div class="detail-drawer">
+    <button class="close-btn" onclick="closeDetail()">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span style="color:var(--gold)">✦</span><span id="toastMsg"></span></div>
+</div>
+
 <script>
-/* ══════════════════════════════════════════════
-   DATA: CATEGORIES
-══════════════════════════════════════════════ */
-const ALL_CATS = [
-  { id:'tech',       label:'Technology',          icon:'💻', tag:'tag-tech'      },
-  { id:'finance',    label:'Finance & Business',   icon:'📈', tag:'tag-finance'   },
-  { id:'science',    label:'Science',              icon:'🔬', tag:'tag-science'   },
-  { id:'career',     label:'Professional Careers', icon:'💼', tag:'tag-career'    },
-  { id:'economy',    label:'Economy',              icon:'🏛️', tag:'tag-economy'   },
-  { id:'culture',    label:'Culture',              icon:'🎭', tag:'tag-culture'   },
-  { id:'health',     label:'Health & Wellness',    icon:'🧬', tag:'tag-health'    },
-  { id:'education',  label:'Education',            icon:'📚', tag:'tag-education' },
-  { id:'history',    label:'History',              icon:'🗿', tag:'tag-history'   },
-  { id:'travel',     label:'Travel',               icon:'✈️', tag:'tag-travel'    },
-  { id:'sports',     label:'Sports',               icon:'⚽', tag:'tag-sports'    },
-  { id:'media',      label:'Podcasts & Media',     icon:'🎙️', tag:'tag-media'     },
-  { id:'language',   label:'Languages',            icon:'🌐', tag:'tag-language'  },
-  { id:'ai',         label:'AI & Future',          icon:'🤖', tag:'tag-tech'      },
-  { id:'law',        label:'Law & Policy',         icon:'⚖️', tag:'tag-career'    },
+/* ─── CATEGORIES ─── */
+const ALL_CATS=[
+  {id:'tech',      label:'Technology',         icon:'💻',tag:'tag-tech'},
+  {id:'finance',   label:'Finance & Business',  icon:'📈',tag:'tag-finance'},
+  {id:'science',   label:'Science',             icon:'🔬',tag:'tag-science'},
+  {id:'career',    label:'Careers & HR',        icon:'💼',tag:'tag-career'},
+  {id:'economy',   label:'Economy',             icon:'🏛️',tag:'tag-economy'},
+  {id:'culture',   label:'Culture',             icon:'🎭',tag:'tag-culture'},
+  {id:'health',    label:'Health',              icon:'🧬',tag:'tag-health'},
+  {id:'education', label:'Education',           icon:'📚',tag:'tag-education'},
+  {id:'history',   label:'History',             icon:'🗿',tag:'tag-history'},
+  {id:'travel',    label:'Travel',              icon:'✈️',tag:'tag-travel'},
+  {id:'sports',    label:'Sports',              icon:'⚽',tag:'tag-sports'},
+  {id:'media',     label:'Podcasts & Media',    icon:'🎙️',tag:'tag-media'},
+  {id:'language',  label:'Languages',           icon:'🌐',tag:'tag-language'},
+  {id:'ai',        label:'AI & Future',         icon:'🤖',tag:'tag-ai'},
+  {id:'law',       label:'Law & Policy',        icon:'⚖️',tag:'tag-law'},
 ];
 
-/* ══════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════ */
-let profile = null;
-let articles = [];
-let bookmarks = JSON.parse(localStorage.getItem('nycu_bookmarks') || '[]');
-let currentFilter = 'all';
-let isLoading = false;
+/* ─── RSS SOURCES via rss2json.com public endpoint (CORS-friendly, no key needed) ─── */
+const RSS='https://api.rss2json.com/v1/api.json?rss_url=';
+const SOURCES={
+  tech:     [{n:'TechCrunch',     u:'https://techcrunch.com/feed/'},
+             {n:'The Verge',      u:'https://www.theverge.com/rss/index.xml'}],
+  finance:  [{n:'Investopedia',   u:'https://www.investopedia.com/feedbuilder/feed/getfeed/?feedName=rss_headline'},
+             {n:'MarketWatch',    u:'https://feeds.marketwatch.com/marketwatch/topstories/'}],
+  science:  [{n:'Science Daily',  u:'https://www.sciencedaily.com/rss/all.xml'},
+             {n:'New Scientist',  u:'https://www.newscientist.com/feed/home/'}],
+  career:   [{n:'HBR',            u:'https://feeds.hbr.org/harvardbusiness'},
+             {n:'Fast Company',   u:'https://www.fastcompany.com/latest/rss'}],
+  economy:  [{n:'Reuters',        u:'https://feeds.reuters.com/reuters/businessNews'},
+             {n:'AP Business',    u:'https://rsshub.app/apnews/topics/business'}],
+  culture:  [{n:'The Guardian',   u:'https://www.theguardian.com/culture/rss'},
+             {n:'NPR Culture',    u:'https://feeds.npr.org/1008/rss.xml'}],
+  health:   [{n:'Medical News',   u:'https://www.medicalnewstoday.com/rss'},
+             {n:'WebMD',          u:'https://rssfeeds.webmd.com/rss/rss.aspx?RSSSource=RSS_PUBLIC'}],
+  education:[{n:'EdSurge',        u:'https://www.edsurge.com/news.rss'},
+             {n:'Inside Higher Ed',u:'https://www.insidehighered.com/rss.xml'}],
+  history:  [{n:'Smithsonian',    u:'https://www.smithsonianmag.com/rss/history-archaeology/'},
+             {n:'History.com',    u:'https://www.history.com/.rss/full/'}],
+  travel:   [{n:'Lonely Planet',  u:'https://www.lonelyplanet.com/news/feed'},
+             {n:'Travel+Leisure', u:'https://www.travelandleisure.com/rss/travel-tips'}],
+  sports:   [{n:'ESPN',           u:'https://www.espn.com/espn/rss/news'},
+             {n:'BBC Sport',      u:'https://feeds.bbci.co.uk/sport/rss.xml'}],
+  media:    [{n:'Variety',        u:'https://variety.com/feed/'},
+             {n:'IndieWire',      u:'https://www.indiewire.com/feed/'}],
+  language: [{n:'Babbel',         u:'https://www.babbel.com/en/magazine/feed'},
+             {n:'Fluent in 3M',   u:'https://www.fluentin3months.com/feed/'}],
+  ai:       [{n:'MIT Tech Review',u:'https://www.technologyreview.com/feed/'},
+             {n:'AI News',        u:'https://artificialintelligence-news.com/feed/'}],
+  law:      [{n:'ABA Journal',    u:'https://www.abajournal.com/news/rss'},
+             {n:'SCOTUSblog',     u:'https://www.scotusblog.com/feed/'}],
+};
 
-/* ══════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', () => {
+/* ─── STATE ─── */
+let profile=null,articles=[],bookmarks=JSON.parse(localStorage.getItem('nycu_bm')||'[]'),currentFilter='all',isLoading=false;
+
+/* ─── INIT ─── */
+window.addEventListener('DOMContentLoaded',()=>{
   buildCatGrid();
-  const saved = localStorage.getItem('nycu_profile');
-  if (saved) {
-    profile = JSON.parse(saved);
-    document.getElementById('onboardingModal').classList.add('hidden');
-    initFeed();
-  }
+  const s=localStorage.getItem('nycu_profile');
+  if(s){profile=JSON.parse(s);document.getElementById('onboardingModal').classList.add('hidden');initFeed();}
 });
 
-/* ══════════════════════════════════════════════
-   ONBOARDING
-══════════════════════════════════════════════ */
-function buildCatGrid() {
-  const g = document.getElementById('catGrid');
-  g.innerHTML = ALL_CATS.map(c => `
-    <div class="cat-chip" data-id="${c.id}" onclick="toggleCat(this)">
-      <span class="cat-icon">${c.icon}</span>
-      <span>${c.label}</span>
-    </div>
-  `).join('');
+/* ─── ONBOARDING ─── */
+function buildCatGrid(){
+  document.getElementById('catGrid').innerHTML=ALL_CATS.map(c=>
+    `<div class="cat-chip" data-id="${c.id}" onclick="toggleCat(this)"><span class="ci">${c.icon}</span>${c.label}</div>`
+  ).join('');
 }
-
-function toggleCat(el) {
-  el.classList.toggle('selected');
-}
-
-function goStep(n) {
-  if (n === 2) {
-    const name = document.getElementById('userName').value.trim();
-    const role = document.getElementById('userRole').value.trim();
-    if (!name || !role) { showToast('Please fill in your name and role 👆'); return; }
+function toggleCat(el){el.classList.toggle('selected');}
+function goStep(n){
+  if(n===2){
+    if(!document.getElementById('userName').value.trim()||!document.getElementById('userRole').value.trim())
+      {showToast('Please fill in name and role 👆');return;}
   }
-  if (n === 3) {
-    const selected = document.querySelectorAll('#catGrid .cat-chip.selected');
-    if (selected.length < 2) { showToast('Pick at least 2 topics 👆'); return; }
-  }
-  document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('step' + n).classList.add('active');
+  if(n===3&&document.querySelectorAll('#catGrid .cat-chip.selected').length<2)
+    {showToast('Pick at least 2 topics 👆');return;}
+  document.querySelectorAll('.modal-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
 }
-
-function saveProfile() {
-  const cats = [...document.querySelectorAll('#catGrid .cat-chip.selected')].map(el => el.dataset.id);
-  const depth = document.querySelector('input[name="depth"]:checked')?.value || 'standard';
-  profile = {
-    name: document.getElementById('userName').value.trim(),
-    role: document.getElementById('userRole').value.trim(),
-    type: document.getElementById('userType').value,
-    cats,
-    depth,
-    created: Date.now()
+function saveProfile(){
+  profile={
+    name:document.getElementById('userName').value.trim(),
+    role:document.getElementById('userRole').value.trim(),
+    type:document.getElementById('userType').value,
+    cats:[...document.querySelectorAll('#catGrid .cat-chip.selected')].map(e=>e.dataset.id),
+    depth:document.querySelector('input[name="depth"]:checked')?.value||'standard',
+    created:Date.now()
   };
-  localStorage.setItem('nycu_profile', JSON.stringify(profile));
+  localStorage.setItem('nycu_profile',JSON.stringify(profile));
   document.getElementById('onboardingModal').classList.add('hidden');
   initFeed();
 }
-
-function openOnboarding() {
-  if (profile) {
-    document.getElementById('userName').value = profile.name || '';
-    document.getElementById('userRole').value = profile.role || '';
-    document.getElementById('userType').value = profile.type || '';
-    document.querySelectorAll('#catGrid .cat-chip').forEach(el => {
-      el.classList.toggle('selected', profile.cats.includes(el.dataset.id));
-    });
+function openOnboarding(){
+  if(profile){
+    document.getElementById('userName').value=profile.name||'';
+    document.getElementById('userRole').value=profile.role||'';
+    document.getElementById('userType').value=profile.type||'';
+    document.querySelectorAll('#catGrid .cat-chip').forEach(el=>el.classList.toggle('selected',profile.cats.includes(el.dataset.id)));
   }
   document.getElementById('onboardingModal').classList.remove('hidden');
   goStep(1);
 }
 
-/* ══════════════════════════════════════════════
-   FEED INIT
-══════════════════════════════════════════════ */
-function initFeed() {
-  renderProfileCard();
-  renderSidebarCats();
-  updateFeedHeader();
-  loadArticles();
+/* ─── FEED INIT ─── */
+function initFeed(){renderProfileCard();renderSidebarCats();updateHeader();loadArticles('all');}
+function updateHeader(){
+  if(!profile)return;
+  const h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('feedTitle').textContent=`${g}, ${profile.name}`;
+  document.getElementById('feedSubtitle').textContent=`Curated for ${profile.role} · ${profile.cats.length} topics · Live news`;
 }
-
-function updateFeedHeader() {
-  if (!profile) return;
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('feedTitle').textContent = `${greet}, ${profile.name}`;
-  document.getElementById('feedSubtitle').textContent =
-    `Curated for ${profile.role} · ${profile.cats.length} topics · AI-powered`;
+function renderProfileCard(){
+  if(!profile)return;
+  document.getElementById('profileCard').innerHTML=`<div class="profile-card">
+    <h4>${x(profile.name)}</h4><p>${x(profile.role)}</p>
+    <div class="profile-cats">${profile.cats.slice(0,5).map(id=>{const c=getCat(id);return`<span class="mini-tag">${c.icon} ${c.label}</span>`;}).join('')}</div>
+  </div>`;
 }
-
-function renderProfileCard() {
-  if (!profile) return;
-  const catLabels = profile.cats.slice(0,5).map(id => {
-    const c = ALL_CATS.find(x => x.id === id);
-    return c ? `<span class="mini-tag">${c.icon} ${c.label}</span>` : '';
+function renderSidebarCats(){
+  if(!profile)return;
+  document.getElementById('sidebarCats').innerHTML=profile.cats.map(id=>{
+    const c=getCat(id);
+    return`<div class="sidebar-link" onclick="filterCat('${c.id}',this)"><span class="ic">${c.icon}</span>${c.label}</div>`;
   }).join('');
-  document.getElementById('profileCard').innerHTML = `
-    <div class="profile-card">
-      <h4>${profile.name}</h4>
-      <p>${profile.role}</p>
-      <div class="profile-cats">${catLabels}</div>
-    </div>
-  `;
 }
 
-function renderSidebarCats() {
-  if (!profile) return;
-  const cats = profile.cats.map(id => ALL_CATS.find(c => c.id === id)).filter(Boolean);
-  document.getElementById('sidebarCats').innerHTML = cats.map(c => `
-    <div class="sidebar-link" onclick="filterCategory('${c.id}',this)">
-      <span class="icon">${c.icon}</span> ${c.label}
-    </div>
-  `).join('');
+/* ─── RSS LOADING ─── */
+async function fetchFeed(url,name,catId){
+  try{
+    const r=await fetch(RSS+encodeURIComponent(url)+'&count=8',{signal:AbortSignal.timeout(9000)});
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    if(d.status!=='ok'||!d.items?.length)return[];
+    return d.items.slice(0,6).map(it=>({
+      id:btoa((it.link||it.title||'').slice(0,60)).replace(/[^a-zA-Z0-9]/g,'').slice(0,14)||Math.random().toString(36).slice(2),
+      title:strip(it.title||'Untitled'),
+      summary:strip(it.description||it.content||'').replace(/\s+/g,' ').slice(0,230).trim()+'…',
+      body:strip(it.content||it.description||''),
+      source:name,category:catId,
+      link:it.link||'',
+      date:it.pubDate?new Date(it.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'',
+      readTime:Math.max(1,Math.round(strip(it.content||it.description||'').split(/\s+/).length/220)),
+      featured:false
+    }));
+  }catch(e){console.warn('RSS fail:',name,e.message);return[];}
 }
 
-/* ══════════════════════════════════════════════
-   AI-POWERED ARTICLE LOADING
-══════════════════════════════════════════════ */
-async function loadArticles(filter = 'all') {
-  if (isLoading) return;
-  isLoading = true;
-  showLoadingState();
-
-  const cats = filter === 'all' || filter === 'trending'
-    ? (profile?.cats || ALL_CATS.map(c=>c.id)).slice(0,6)
-    : [filter];
-
-  const catDetails = cats.map(id => {
-    const c = ALL_CATS.find(x => x.id === id);
-    return c ? `${c.icon} ${c.label}` : id;
-  }).join(', ');
-
-  const depthInstr = {
-    quick:    'Write 1-sentence summaries. Keep article body to 2 short paragraphs.',
-    standard: 'Write 2-sentence summaries. Include context and a key takeaway.',
-    deep:     'Write 3-sentence summaries. Include professional implications, expert perspectives, and actionable takeaways.'
-  }[profile?.depth || 'standard'];
-
-  const prompt = `You are a world-class news curator and editor. Generate ${filter === 'trending' ? 8 : 10} realistic, diverse, high-quality news article summaries for a professional audience.
-
-User profile:
-- Name: ${profile?.name || 'User'}
-- Role: ${profile?.role || 'Professional'}
-- Topics of interest: ${catDetails}
-- Reading preference: ${profile?.depth || 'standard'}
-
-Instructions:
-- ${depthInstr}
-- Make articles feel timely, real, and professionally relevant to someone in the role of "${profile?.role || 'professional'}"
-- Cover a mix of the topics listed
-- Include a mix of: breaking news, industry trends, career/professional insights, and cultural/educational pieces
-- For career/professional categories, include items like new laws, methodologies, certifications, leadership insights
-- Make titles punchy and editorial — like The Economist or Harvard Business Review
-- Estimated reading time: 2–8 minutes range
-- Vary the sources (HBR, MIT Tech Review, The Economist, Reuters, Nature, Bloomberg, TechCrunch, SHRM, PMI, etc.)
-
-Return ONLY a valid JSON array (no markdown, no explanation) with this exact structure:
-[
-  {
-    "id": "unique_id_string",
-    "title": "Article headline",
-    "category": "one of: tech|finance|science|career|economy|culture|health|education|history|travel|sports|media|language|ai|law",
-    "summary": "Summary text here",
-    "source": "Publication name",
-    "readTime": 4,
-    "featured": false,
-    "body": "3-4 paragraphs of realistic article content. Use \\n\\n to separate paragraphs.",
-    "date": "March 2025"
-  }
-]
-
-Make the first item have "featured": true. The rest should be false.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+async function loadArticles(filter){
+  if(isLoading)return;
+  isLoading=true;currentFilter=filter;
+  showSkeleton();
+  let results=[],used=new Set();
+  try{
+    const cats=filter==='all'?(profile?.cats||['tech','science','career']).slice(0,7):[filter];
+    const promises=cats.flatMap(catId=>{
+      const srcs=(SOURCES[catId]||[]).slice(0,filter==='all'?1:2);
+      return srcs.map(s=>{used.add(s.n);return fetchFeed(s.u,s.n,catId);});
     });
-    const data = await res.json();
-    const raw = data.content?.map(b => b.text || '').join('') || '[]';
-    let cleaned = raw.replace(/```json|```/g,'').trim();
-    // find first [ to last ]
-    const start = cleaned.indexOf('[');
-    const end = cleaned.lastIndexOf(']');
-    if (start !== -1 && end !== -1) cleaned = cleaned.slice(start, end+1);
-    articles = JSON.parse(cleaned);
-    renderFeed(articles);
-    renderTrending(articles);
-  } catch(e) {
+    const settled=await Promise.allSettled(promises);
+    settled.forEach(r=>{if(r.status==='fulfilled')results.push(...r.value);});
+    if(!results.length){results=fallback(filter);used.add('Curated fallback');}
+    results=shuffle(results);
+    if(results.length)results[0].featured=true;
+    articles=results;
+    document.getElementById('sourceLabel').textContent=`${used.size} source${used.size!==1?'s':''}`;
+    document.getElementById('feedCount').textContent=`${results.length} article${results.length!==1?'s':''}`;
+    renderFeed(articles);renderTrending(articles);
+  }catch(e){
     console.error(e);
-    renderError();
-  } finally {
-    isLoading = false;
-  }
+    const fb=fallback(filter);if(fb.length)fb[0].featured=true;
+    articles=fb;document.getElementById('sourceLabel').textContent='Fallback';
+    renderFeed(fb);renderTrending(fb);
+  }finally{isLoading=false;}
 }
 
-/* ══════════════════════════════════════════════
-   RENDER FEED
-══════════════════════════════════════════════ */
-function renderFeed(arts) {
-  const featured = arts.find(a => a.featured);
-  const rest = arts.filter(a => !a.featured);
-
-  // Featured
-  const fa = document.getElementById('featuredArea');
-  if (featured) {
-    const cat = ALL_CATS.find(c => c.id === featured.category) || { icon:'📰', tag:'tag-default', label: featured.category };
-    fa.innerHTML = `
-      <div class="featured-card" onclick="openDetail('${featured.id}')">
-        <div class="featured-badge">${cat.icon} ${cat.label} · Featured</div>
-        <h2>${esc(featured.title)}</h2>
-        <p class="summary">${esc(featured.summary)}</p>
-        <div class="featured-meta">
-          <span class="source">${esc(featured.source)}</span>
-          <span>⏱ ${featured.readTime} min read</span>
-          <span>${featured.date || ''}</span>
-          <button class="read-more">Read more →</button>
-        </div>
+/* ─── RENDER ─── */
+function renderFeed(arts){
+  const feat=arts.find(a=>a.featured),rest=arts.filter(a=>!a.featured);
+  const fa=document.getElementById('featuredArea');
+  if(feat){
+    const c=getCat(feat.category);
+    fa.innerHTML=`<div class="featured-card" onclick="openDetail('${feat.id}')">
+      <div class="feat-badge">${c.icon} ${c.label} · Top Story</div>
+      <h2>${x(feat.title)}</h2>
+      <p class="feat-summary">${x(feat.summary)}</p>
+      <div class="feat-meta">
+        <span class="feat-source">${x(feat.source)}</span>
+        <span>⏱ ${feat.readTime} min</span>
+        <span>${feat.date}</span>
+        <button class="read-more">Read article →</button>
       </div>
-    `;
-  } else { fa.innerHTML = ''; }
+    </div>`;
+  }else fa.innerHTML='';
+  const aa=document.getElementById('articlesArea');
+  if(!rest.length){aa.innerHTML=`<div class="empty"><div class="ei">📭</div><h3>No articles found</h3><p>Try refreshing or pick another category.</p></div>`;return;}
+  aa.innerHTML=`<div class="section-title">Latest Articles</div><div class="article-grid">${rest.map((a,i)=>card(a,i)).join('')}</div>`;
+}
 
-  // Grid
-  const aa = document.getElementById('articlesArea');
-  if (!rest.length) { aa.innerHTML = '<div class="empty-state"><div class="big-icon">📭</div><h3>No articles found</h3><p>Try refreshing or adjusting your preferences.</p></div>'; return; }
-
-  aa.innerHTML = `
-    <div class="section-title">Your Curated Articles</div>
-    <div class="article-grid">
-      ${rest.map((a, i) => articleCard(a, i)).join('')}
+function card(a,i){
+  const c=getCat(a.category),saved=bookmarks.some(b=>b.id===a.id);
+  return`<div class="article-card" style="animation-delay:${i*.04}s" onclick="openDetail('${a.id}')">
+    <div class="card-top">
+      <span class="cat-tag ${c.tag}">${c.icon} ${c.label}</span>
+      <button class="bm-btn${saved?' saved':''}" onclick="event.stopPropagation();toggleBM('${a.id}')" title="Save">🔖</button>
     </div>
-  `;
+    <h3>${x(a.title)}</h3>
+    <p class="card-summary">${x(a.summary)}</p>
+    <div class="card-footer"><span><strong>${x(a.source)}</strong></span><span>⏱ ${a.readTime} min</span></div>
+  </div>`;
 }
 
-function articleCard(a, i) {
-  const cat = ALL_CATS.find(c => c.id === a.category) || { icon:'📰', tag:'tag-default', label: a.category };
-  const saved = bookmarks.some(b => b.id === a.id);
-  return `
-    <div class="article-card" style="animation-delay:${i * 0.05}s" onclick="openDetail('${a.id}')">
-      <div class="card-top">
-        <span class="cat-tag ${cat.tag}">${cat.icon} ${cat.label}</span>
-        <button class="bookmark-btn ${saved?'saved':''}" onclick="event.stopPropagation();toggleBookmark('${a.id}')" title="Save article">
-          ${saved ? '🔖' : '🔖'}
-        </button>
-      </div>
-      <h3>${esc(a.title)}</h3>
-      <p class="summary">${esc(a.summary)}</p>
-      <div class="card-footer">
-        <span><strong>${esc(a.source)}</strong></span>
-        <span class="read-time">⏱ ${a.readTime} min</span>
-      </div>
-    </div>
-  `;
-}
-
-function renderTrending(arts) {
-  const t = document.getElementById('trendingArea');
-  const top = arts.slice(0,6);
-  t.innerHTML = top.map((a,i) => {
-    const cat = ALL_CATS.find(c => c.id === a.category);
-    return `
-      <div class="trending-item" onclick="openDetail('${a.id}')">
-        <div class="trending-num">#${i+1} ${cat ? cat.icon + ' ' + cat.label : ''}</div>
-        <h4>${esc(a.title)}</h4>
-        <div class="t-meta">${esc(a.source)} · ${a.readTime} min</div>
-      </div>
-    `;
+function renderTrending(arts){
+  document.getElementById('trendingArea').innerHTML=arts.slice(0,6).map((a,i)=>{
+    const c=getCat(a.category);
+    return`<div class="trending-item" onclick="openDetail('${a.id}')">
+      <div class="trending-num">#${i+1} ${c.icon} ${c.label}</div>
+      <h4>${x(a.title)}</h4>
+      <div class="tm">${x(a.source)} · ${a.readTime} min</div>
+    </div>`;
   }).join('');
 }
 
-function showLoadingState() {
-  document.getElementById('featuredArea').innerHTML = `
-    <div class="skeleton" style="height:160px;margin-bottom:2rem;border-radius:16px;"></div>
-  `;
-  document.getElementById('articlesArea').innerHTML = `
-    <div class="section-title">Loading your feed…</div>
-    <div class="loading-grid">
-      ${Array(6).fill(0).map(() => `
-        <div class="skeleton">
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line title"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+function showSkeleton(){
+  document.getElementById('featuredArea').innerHTML=`<div class="skeleton" style="height:130px;margin-bottom:1.6rem;border-radius:16px"></div>`;
+  document.getElementById('articlesArea').innerHTML=`<div class="section-title">Fetching articles…</div>
+    <div class="skel-grid">${Array(6).fill(0).map(()=>`<div class="skeleton">
+      <div class="skel-line s"></div><div class="skel-line t"></div>
+      <div class="skel-line"></div><div class="skel-line"></div><div class="skel-line s"></div>
+    </div>`).join('')}</div>`;
+  document.getElementById('sourceLabel').textContent='Fetching…';
+  document.getElementById('feedCount').textContent='';
 }
 
-function renderError() {
-  document.getElementById('featuredArea').innerHTML = '';
-  document.getElementById('articlesArea').innerHTML = `
-    <div class="empty-state">
-      <div class="big-icon">⚡</div>
-      <h3>Connection issue</h3>
-      <p>Couldn't load articles. Check your connection and try refreshing.</p>
-      <button class="btn btn-primary" style="margin-top:1rem" onclick="refreshFeed()">Try Again</button>
-    </div>
-  `;
-}
-
-/* ══════════════════════════════════════════════
-   ARTICLE DETAIL
-══════════════════════════════════════════════ */
-function openDetail(id) {
-  const a = articles.find(x => x.id === id);
-  if (!a) return;
-  const cat = ALL_CATS.find(c => c.id === a.category) || { icon:'📰', tag:'tag-default', label: a.category };
-  const saved = bookmarks.some(b => b.id === a.id);
-  const bodyHtml = (a.body || a.summary).split('\n\n').map(p => `<p>${esc(p)}</p>`).join('');
-
-  document.getElementById('detailContent').innerHTML = `
-    <div class="detail-cat"><span class="cat-tag ${cat.tag}">${cat.icon} ${cat.label}</span></div>
-    <h2 class="detail-title">${esc(a.title)}</h2>
+/* ─── DETAIL ─── */
+function openDetail(id){
+  const a=articles.find(a=>a.id===id)||bookmarks.find(a=>a.id===id);if(!a)return;
+  const c=getCat(a.category),saved=bookmarks.some(b=>b.id===a.id);
+  const body=(a.body||a.summary).split(/\n\n+/).filter(Boolean).slice(0,8).map(p=>`<p>${x(p)}</p>`).join('');
+  document.getElementById('detailContent').innerHTML=`
+    <div style="margin-bottom:.6rem"><span class="cat-tag ${c.tag}">${c.icon} ${c.label}</span></div>
+    <h2 class="detail-title">${x(a.title)}</h2>
     <div class="detail-meta">
-      <span><strong>${esc(a.source)}</strong></span>
-      <span>⏱ ${a.readTime} min read</span>
-      <span>${a.date || ''}</span>
+      <span><strong>${x(a.source)}</strong></span>
+      <span>⏱ ${a.readTime} min</span>
+      <span>${a.date}</span>
+      ${a.link?`<a href="${x(a.link)}" target="_blank" rel="noopener">↗ Original</a>`:''}
     </div>
-    <div class="ai-insight">
-      <div class="ai-insight-label">✦ AI Insight</div>
-      <p>${esc(a.summary)}</p>
-    </div>
-    <div class="detail-body">${bodyHtml}</div>
+    <div class="ai-box"><div class="ai-label">✦ Summary</div><p>${x(a.summary)}</p></div>
+    <div class="detail-body">${body||`<p>${x(a.summary)}</p>`}</div>
     <div class="detail-actions">
-      <button class="btn btn-primary" onclick="toggleBookmark('${a.id}');updateDetailBookmark('${a.id}')" id="detailBmBtn">
-        ${saved ? '🔖 Saved' : '🔖 Save Article'}
+      <button class="btn btn-primary" id="detBm" onclick="toggleBM('${a.id}');document.getElementById('detBm').textContent=bookmarks.some(b=>b.id==='${a.id}')?'🔖 Saved':'🔖 Save'">
+        ${saved?'🔖 Saved':'🔖 Save'}
       </button>
-      <button class="btn btn-ghost" onclick="shareArticle('${esc(a.title)}')">↗ Share</button>
-    </div>
-  `;
+      ${a.link?`<a href="${x(a.link)}" target="_blank" rel="noopener" class="btn btn-ghost">↗ Full Article</a>`:''}
+      <button class="btn btn-ghost" onclick="shareIt('${x(a.title)}','${x(a.link)}')">⬡ Share</button>
+    </div>`;
   document.getElementById('detailPanel').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
+}
+function closeDetail(){document.getElementById('detailPanel').classList.remove('open');document.body.style.overflow='';}
+function shareIt(title,link){
+  const u=link||location.href;
+  if(navigator.share)navigator.share({title,url:u});
+  else navigator.clipboard?.writeText(u).then(()=>showToast('Link copied!')).catch(()=>{});
 }
 
-function closeDetail() {
-  document.getElementById('detailPanel').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function updateDetailBookmark(id) {
-  const saved = bookmarks.some(b => b.id === id);
-  const btn = document.getElementById('detailBmBtn');
-  if (btn) btn.textContent = saved ? '🔖 Saved' : '🔖 Save Article';
-}
-
-function shareArticle(title) {
-  if (navigator.share) {
-    navigator.share({ title, url: window.location.href });
-  } else {
-    navigator.clipboard.writeText(window.location.href).then(() => showToast('Link copied to clipboard!'));
-  }
-}
-
-/* ══════════════════════════════════════════════
-   BOOKMARKS
-══════════════════════════════════════════════ */
-function toggleBookmark(id) {
-  const a = articles.find(x => x.id === id);
-  if (!a) return;
-  const idx = bookmarks.findIndex(b => b.id === id);
-  if (idx > -1) {
-    bookmarks.splice(idx, 1);
-    showToast('Removed from saved articles');
-  } else {
-    bookmarks.unshift({ ...a, savedAt: Date.now() });
-    showToast('Article saved! 🔖');
-  }
-  localStorage.setItem('nycu_bookmarks', JSON.stringify(bookmarks));
-  // re-render buttons
-  document.querySelectorAll('.bookmark-btn').forEach(btn => {
-    const card = btn.closest('.article-card');
-    if (card) {
-      const cardId = card.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
-      if (cardId === id) {
-        const saved = bookmarks.some(b => b.id === id);
-        btn.classList.toggle('saved', saved);
-      }
-    }
+/* ─── BOOKMARKS ─── */
+function toggleBM(id){
+  const a=articles.find(a=>a.id===id)||bookmarks.find(a=>a.id===id);if(!a)return;
+  const i=bookmarks.findIndex(b=>b.id===id);
+  if(i>-1){bookmarks.splice(i,1);showToast('Removed from saved');}
+  else{bookmarks.unshift({...a,savedAt:Date.now()});showToast('Article saved 🔖');}
+  localStorage.setItem('nycu_bm',JSON.stringify(bookmarks));
+  document.querySelectorAll('.bm-btn').forEach(btn=>{
+    const c=btn.closest('.article-card');if(!c)return;
+    const m=c.getAttribute('onclick')?.match(/'([^']+)'/);
+    if(m&&m[1]===id)btn.classList.toggle('saved',bookmarks.some(b=>b.id===id));
   });
 }
-
-function renderBookmarks() {
-  const ba = document.getElementById('bookmarksArea');
-  if (!bookmarks.length) {
-    ba.innerHTML = `<div class="empty-state"><div class="big-icon">🔖</div><h3>No saved articles yet</h3><p>Bookmark articles from your feed to read later.</p></div>`;
-    return;
-  }
-  ba.innerHTML = `
-    <div class="article-grid">
-      ${bookmarks.map((a, i) => articleCard(a, i)).join('')}
-    </div>
-  `;
+function renderBookmarks(){
+  const ba=document.getElementById('bookmarksArea');
+  if(!bookmarks.length){ba.innerHTML=`<div class="empty"><div class="ei">🔖</div><h3>No saved articles yet</h3><p>Bookmark articles from your feed to read later.</p></div>`;return;}
+  ba.innerHTML=`<div class="article-grid">${bookmarks.map((a,i)=>card(a,i)).join('')}</div>`;
 }
 
-/* ══════════════════════════════════════════════
-   NAVIGATION
-══════════════════════════════════════════════ */
-function showPage(page) {
-  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-  if (page === 'feed') {
-    document.getElementById('feedPage').classList.add('active');
-  } else if (page === 'bookmarks') {
-    document.getElementById('bookmarksPage').classList.add('active');
-    renderBookmarks();
-  }
+/* ─── NAVIGATION ─── */
+function showPage(page){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(page==='bookmarks'?'bookmarksPage':'feedPage').classList.add('active');
+  if(page==='bookmarks')renderBookmarks();
 }
-
-function filterCategory(cat, el) {
-  currentFilter = cat;
-  // update active state
-  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-  if (el) el.classList.add('active');
+function filterCat(cat,el){
+  currentFilter=cat;
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');
   showPage('feed');
+  const c=ALL_CATS.find(a=>a.id===cat);
+  if(c){document.getElementById('feedTitle').textContent=`${c.icon} ${c.label}`;document.getElementById('feedSubtitle').textContent=`Latest from ${c.label} sources`;}
+  else updateHeader();
   loadArticles(cat);
+}
+function refreshFeed(){loadArticles(currentFilter);}
 
-  const catObj = ALL_CATS.find(c => c.id === cat);
-  if (catObj) {
-    document.getElementById('feedTitle').textContent = `${catObj.icon} ${catObj.label}`;
-    document.getElementById('feedSubtitle').textContent = 'Curated articles in this category';
-  } else if (cat === 'all') {
-    updateFeedHeader();
-  } else if (cat === 'trending') {
-    document.getElementById('feedTitle').textContent = '🔥 Trending Now';
-    document.getElementById('feedSubtitle').textContent = 'What\'s making waves across your topics';
-  }
+/* ─── SEARCH ─── */
+let stm;
+function handleSearch(v){
+  clearTimeout(stm);stm=setTimeout(()=>{
+    if(!v.trim()){renderFeed(articles);return;}
+    const q=v.toLowerCase();
+    renderFeed(articles.filter(a=>a.title.toLowerCase().includes(q)||a.summary.toLowerCase().includes(q)||a.source.toLowerCase().includes(q)||(a.category||'').includes(q)));
+  },280);
 }
 
-function refreshFeed() {
-  loadArticles(currentFilter);
+/* ─── FALLBACK ARTICLES ─── */
+function fallback(filter){
+  const pool=[
+    {id:'f1',title:'The Future of Remote Work: What Every Professional Needs to Know',summary:'Hybrid work has reshaped recruiting, performance management, and culture. Organizations with async-first models now report higher output and lower attrition.',body:'Hybrid work has become the dominant model, with over 60% of knowledge workers splitting time between home and office. HR leaders are redesigning policies around digital-first communication, well-being stipends, and outcome-based performance metrics.\n\nThe most competitive organizations are building "flexibility frameworks" — structured yet adaptable schedules that accommodate deep work and collaboration without mandating fixed hours.\n\nRetention data shows employees with genuine schedule flexibility are 23% less likely to leave within 12 months, reshaping how compensation packages are designed.',source:'HBR',category:'career',link:'https://hbr.org',date:'Mar 2025',readTime:4,featured:false},
+    {id:'f2',title:'AI is Rewriting What It Means to Be a Software Engineer',summary:'LLMs now write, review, and deploy production code at scale — changing not just developer workflows, but what companies expect from engineering talent.',body:'The software engineering role is evolving at unprecedented pace. With AI coding assistants integrated into every major IDE, developers spend less time on boilerplate and more on architecture and judgment.\n\nGitHub reports over 50% of new code in Copilot-enabled repos now starts from AI suggestions. Productivity gains are real, but quality control challenges are equally significant.\n\nSenior engineers are increasingly valued not for coding speed, but for their ability to review AI output, handle edge cases, and make architectural decisions LLMs cannot reliably make.',source:'MIT Technology Review',category:'tech',link:'https://technologyreview.com',date:'Mar 2025',readTime:5,featured:false},
+    {id:'f3',title:'Global Economy Slows as Rate Cuts Remain Off the Table',summary:'Central banks are holding rates higher for longer, dampening global growth projections. The IMF now expects 2.8% growth in 2025 — below earlier forecasts.',body:'The IMF revised its global growth forecast down to 2.8% for 2025, citing sustained monetary tightening across the US, EU, and UK. While headline inflation has moderated, core services prices remain sticky.\n\nEmerging markets face dual pressure: dollar strength elevates debt costs while domestic demand softens. Countries like Brazil, Turkey, and South Africa navigate particularly difficult fiscal environments.\n\nFor businesses, the message is clear: the era of cheap capital is over. CFOs are restructuring balance sheets, prioritizing cash flow, and delaying capital expenditures.',source:'The Economist',category:'economy',link:'https://economist.com',date:'Mar 2025',readTime:5,featured:false},
+    {id:'f4',title:'Breakthrough Alzheimer\'s Therapy Shows 35% Reduction in Decline',summary:'A new dual-mechanism antibody therapy targeting both amyloid plaques and tau proteins has shown remarkable results in Phase III clinical trials.',body:'Researchers at UCSF and a European consortium announced results from a 3,200-person trial showing measurable cognitive preservation in early-stage Alzheimer\'s patients.\n\nUnlike previous attempts, the compound also addresses tau protein accumulation — suggesting a dual-mechanism approach may be key to slowing the disease.\n\nRegulatory review is expected to begin later this year. The therapy, if approved, would be administered as a monthly infusion, with cost and accessibility remaining key challenges.',source:'Science Daily',category:'health',link:'https://sciencedaily.com',date:'Feb 2025',readTime:4,featured:false},
+    {id:'f5',title:'Project Managers Who Understand AI Are Getting Promoted Faster',summary:'PMI\'s latest report identifies AI integration literacy as the fastest-growing skill requirement for PM roles — and the gap between those who have it and those who don\'t is widening.',body:'The Project Management Institute\'s workforce report identifies AI literacy as the top emerging skill requirement for PM roles in 2025. Tools like Microsoft Copilot for Project, Notion AI, and ClickUp AI are in use at over 40% of enterprise organizations.\n\nBeyond tools, hiring managers seek PMs who bridge technical AI teams and business stakeholders — translating model outputs into actionable project decisions.\n\nNew micro-credentials from PMI and Coursera are emerging rapidly. The PMP exam itself is expected to include AI competency areas in its 2026 update.',source:'PMI Pulse',category:'career',link:'https://pmi.org',date:'Mar 2025',readTime:4,featured:false},
+    {id:'f6',title:'Ancient Rome\'s Infrastructure: What Modern Cities Are Learning',summary:'New archaeological analysis of Roman aqueducts and drainage systems reveals engineering principles that drought-prone cities are actively applying today.',body:'A Cambridge-Politecnico di Milano project used ground-penetrating radar and 3D modeling to analyze the Aqua Claudia aqueduct, built in 52 CE. Results revealed engineering tolerances within 0.1% of modern standards.\n\nUrban planners in water-scarce regions are particularly interested in how Roman engineers managed distribution across elevation gradients without pumps — relying on gravity-fed systems with built-in redundancy.\n\nThe research is informing infrastructure projects in Spain, Morocco, and parts of the American Southwest.',source:'Smithsonian',category:'history',link:'https://smithsonianmag.com',date:'Feb 2025',readTime:5,featured:false},
+    {id:'f7',title:'Why Bilingualism Protects Your Brain — New Neuroimaging Evidence',summary:'MRI studies confirm structural differences in the brains of bilingual individuals, with benefits appearing even in adults who began learning a second language after age 40.',body:'University of Edinburgh researchers analyzed MRI data from 648 bilingual and monolingual adults across five countries, finding structural differences in the anterior cingulate cortex — an area linked to attention and executive function.\n\nCritically, even adults who began learning a second language after 40 showed partial neuroprotective effects. The study controlled for education level, socioeconomic status, and general cognitive activity.\n\nLanguage learning platforms are incorporating these findings into their research roadmaps, with several clinical partnerships now underway.',source:'Nature',category:'language',link:'https://nature.com',date:'Feb 2025',readTime:4,featured:false},
+    {id:'f8',title:'Long-Form Podcasting is Back — and Gen Z is Driving It',summary:'Amid short-video saturation, audio podcasts over 60 minutes are seeing a listener resurgence — driven by audiences seeking immersive, distraction-free depth.',body:'Spotify\'s Q4 2024 data shows a 28% increase in per-session listening time for podcasts over 90 minutes among listeners aged 18–26. The trend contradicts assumptions that younger audiences prefer shorter content.\n\nCreators across science, history, and business are dominating growth charts. Analysts attribute this to a "depth premium" — audiences exhausted by algorithmic content seeking substance and continuity.\n\nAdvertisers are following, with CPM rates for long-form podcast slots now rivaling premium streaming placements.',source:'Variety',category:'media',link:'https://variety.com',date:'Jan 2025',readTime:3,featured:false},
+    {id:'f9',title:'Climate Finance Hits Record $1.3 Trillion — but the Wrong Places',summary:'Global climate investment reached an all-time high, but developing nations say funds are flowing to the wrong priorities and moving too slowly.',body:'A UN Environment Programme report tracks $1.3 trillion in climate-related financial flows in 2024, a 12% increase year-over-year. Growth is driven primarily by renewable energy investment in China, the US, and EU.\n\nOnly 16% of tracked funds reached developing nations, despite these countries bearing disproportionate climate impact. Adaptation funding for sea walls, drought-resistant agriculture, and infrastructure hardening remains dramatically underfunded.\n\nClimate economists argue the gap isn\'t a shortage of capital, but a mismatch between risk appetite and opportunity.',source:'Reuters',category:'economy',link:'https://reuters.com',date:'Mar 2025',readTime:5,featured:false},
+    {id:'f10',title:'The Science of Sleep Regularity: More Important Than Duration',summary:'New Harvard data finds that going to bed at consistent times predicts health outcomes more reliably than total hours slept — and irregular schedules carry serious metabolic risks.',body:'A Harvard Medical School study tracking 12,000 participants over five years finds that sleep regularity — consistent bedtimes and wake times — predicts health outcomes more reliably than total hours slept.\n\nParticipants with irregular schedules had 30% higher rates of metabolic syndrome, even when averaging 7–8 hours per night.\n\nWearable data from Oura Ring and Apple Watch users contributed to the dataset, marking one of the first large-scale studies to integrate consumer health device data with clinical outcomes.',source:'Science Daily',category:'health',link:'https://sciencedaily.com',date:'Feb 2025',readTime:4,featured:false},
+  ];
+  if(filter==='all')return shuffle(pool);
+  const filtered=pool.filter(a=>a.category===filter);
+  return filtered.length?shuffle(filtered):shuffle(pool);
 }
 
-/* ══════════════════════════════════════════════
-   SEARCH
-══════════════════════════════════════════════ */
-let searchTimeout;
-function handleSearch(val) {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    if (!val.trim()) { renderFeed(articles); return; }
-    const q = val.toLowerCase();
-    const filtered = articles.filter(a =>
-      a.title.toLowerCase().includes(q) ||
-      a.summary.toLowerCase().includes(q) ||
-      a.source.toLowerCase().includes(q) ||
-      (a.category || '').toLowerCase().includes(q)
-    );
-    renderFeed(filtered);
-  }, 300);
-}
-
-/* ══════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════ */
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-/* ══════════════════════════════════════════════
-   UTILS
-══════════════════════════════════════════════ */
-function esc(str = '') {
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-
-// Close detail on Escape
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeDetail();
-});
+/* ─── UTILS ─── */
+function getCat(id){return ALL_CATS.find(c=>c.id===id)||{icon:'📰',tag:'tag-default',label:id||'News'};}
+function x(s=''){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function strip(h=''){const d=document.createElement('div');d.innerHTML=h;return d.textContent||d.innerText||'';}
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+let ttm;
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(ttm);ttm=setTimeout(()=>t.classList.remove('show'),2800);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 </script>
 </body>
 </html>
