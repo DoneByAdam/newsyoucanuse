@@ -2,431 +2,977 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>News You Can Use</title>
-<meta name="description" content="Personalized news intelligence for professionals, learners, and curious minds."/>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0f'/%3E%3Ctext x='4' y='24' font-size='22' font-family='Georgia,serif' fill='%2300d4ff'%3EN%3C/text%3E%3Ccircle cx='26' cy='8' r='4' fill='%2300d4ff'/%3E%3C/svg%3E"/>
+<meta name="description" content="Personalized news intelligence for professionals and curious minds."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230d0d0d'/%3E%3Ctext x='5' y='24' font-size='20' font-family='Georgia' fill='%23e8c97e'%3EN%3C/text%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
+/* ══════════════════════════════════════
+   RESET & TOKENS
+══════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#09090f;--bg2:#101018;--bg3:#16161f;
-  --border:rgba(255,255,255,0.07);
-  --text:#e8e8f0;--muted:#6b6b80;
-  --accent:#00d4ff;--accent2:#7c5cfc;--accent3:#ff6b6b;
-  --gold:#f5c842;--green:#3dffc0;
-  --radius:12px;
-  --font-head:'Playfair Display',Georgia,serif;
-  --font-body:'DM Sans',sans-serif;
-  --font-mono:'DM Mono',monospace;
+  /* Dark editorial palette */
+  --ink:       #0d0d0d;
+  --ink2:      #141414;
+  --ink3:      #1c1c1c;
+  --ink4:      #252525;
+  --rule:      rgba(255,255,255,0.07);
+  --rule2:     rgba(255,255,255,0.12);
+  --fg:        #f0ede8;
+  --fg2:       #a09a92;
+  --fg3:       #6a6460;
+  --gold:      #e8c97e;
+  --gold2:     #c8a84e;
+  --teal:      #4ecdc4;
+  --rose:      #e07878;
+  --sage:      #7eb896;
+  --lavender:  #9b8fc4;
+  --sky:       #6ab0d4;
+  --r:         10px;
+  --serif:     'Cormorant Garamond', Georgia, serif;
+  --sans:      'Instrument Sans', system-ui, sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+  --ease:      cubic-bezier(.4,0,.2,1);
 }
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;opacity:.5}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--ink);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* grain */
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.025'/%3E%3C/svg%3E");
+  opacity:.6}
 .app{position:relative;z-index:1}
-header{position:sticky;top:0;z-index:100;background:rgba(9,9,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;cursor:pointer}
-.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:900;font-size:17px;color:#fff;position:relative;flex-shrink:0}
-.logo-icon::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--accent3);border-radius:50%;border:2px solid var(--bg)}
-.logo-text strong{font-family:var(--font-head);font-size:14px;font-weight:700;display:block}
-.logo-text span{font-size:10px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
-.header-right{display:flex;align-items:center;gap:8px}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
-.btn-primary{background:var(--accent);color:#000;font-weight:600}
-.btn-primary:hover{background:#22dcff;transform:translateY(-1px)}
-.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.87);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .3s ease}
-.modal-overlay.hidden{display:none}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.25rem;max-width:530px;width:100%;animation:slideUp .35s ease;max-height:90vh;overflow-y:auto}
-.modal-step{display:none}
-.modal-step.active{display:block}
-.modal h2{font-family:var(--font-head);font-size:1.7rem;margin-bottom:.35rem}
-.modal-step>p{color:var(--muted);font-size:13.5px;margin-bottom:1.4rem}
-.field-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
-.modal input,.modal select{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:14px;margin-bottom:1rem;outline:none;transition:border-color .2s}
-.modal input:focus,.modal select:focus{border-color:var(--accent)}
-.modal select option{background:var(--bg3)}
-.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:1.4rem}
-.cat-chip{padding:9px 6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;text-align:center;transition:all .16s;background:var(--bg3);user-select:none}
-.cat-chip .ci{font-size:16px;display:block;margin-bottom:2px}
-.cat-chip:hover{border-color:rgba(255,255,255,.2)}
-.cat-chip.selected{border-color:var(--accent);background:rgba(0,212,255,.08);color:var(--accent)}
-.step-dots{display:flex;gap:6px;align-items:center;margin-bottom:1.4rem}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .3s}
-.dot.active{background:var(--accent);width:20px;border-radius:3px}
-.modal-footer{display:flex;justify-content:flex-end;gap:9px;margin-top:.5rem}
-.depth-opt{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--bg3);transition:border-color .18s}
-.depth-opt:hover{border-color:rgba(255,255,255,.2)}
-.depth-opt input[type=radio]{accent-color:var(--accent);width:auto;margin:0;background:none;border:none}
-.depth-opt strong{display:block;font-size:13px;margin-bottom:1px}
-.depth-opt span{font-size:11px;color:var(--muted)}
-main{display:flex;min-height:calc(100vh - 60px)}
-.sidebar{width:205px;flex-shrink:0;border-right:1px solid var(--border);padding:1.25rem 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
-.sidebar-section{margin-bottom:1.25rem}
-.sidebar-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.13em;padding:0 1rem;margin-bottom:5px}
-.sidebar-link{display:flex;align-items:center;gap:9px;padding:8px 1rem;cursor:pointer;font-size:13px;color:var(--muted);border-left:2px solid transparent;transition:all .16s;white-space:nowrap}
-.sidebar-link:hover{color:var(--text);background:rgba(255,255,255,.03)}
-.sidebar-link.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,.05)}
-.sidebar-link .ic{font-size:14px;width:18px;text-align:center}
-.content{flex:1;padding:1.75rem 1.75rem;max-width:920px;min-width:0}
-.right-rail{width:245px;flex-shrink:0;padding:1.75rem 1.25rem 1.75rem 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
-.page-header{margin-bottom:1.4rem;animation:slideUp .4s ease .05s both}
-.page-header h1{font-family:var(--font-head);font-size:1.8rem;font-weight:700;margin-bottom:3px}
-.page-header p{color:var(--muted);font-size:13px}
-.status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;animation:slideUp .4s ease .1s both;gap:10px}
-.search-wrap{position:relative;flex:1;max-width:380px}
-.search-wrap input{width:100%;padding:9px 13px 9px 35px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .2s}
-.search-wrap input:focus{border-color:var(--accent)}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
-.source-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(0,212,255,.1);color:var(--accent);font-family:var(--font-mono);white-space:nowrap}
-.feed-count{font-size:11px;color:var(--muted);white-space:nowrap}
-.featured-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.6rem;margin-bottom:1.6rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;animation:slideUp .4s ease .15s both}
-.featured-card:hover{border-color:rgba(255,255,255,.14)}
-.featured-card::before{content:'';position:absolute;top:0;right:0;width:260px;height:260px;background:radial-gradient(circle,rgba(0,212,255,.07) 0%,transparent 70%);pointer-events:none}
-.feat-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-family:var(--font-mono);margin-bottom:.55rem;display:flex;align-items:center;gap:5px}
-.feat-badge::before{content:'●'}
-.featured-card h2{font-family:var(--font-head);font-size:1.35rem;font-weight:700;margin-bottom:.55rem;line-height:1.3}
-.feat-summary{color:var(--muted);font-size:13.5px;line-height:1.65;margin-bottom:.85rem;max-width:660px}
-.feat-meta{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
-.feat-source{color:var(--text);font-weight:600}
-.read-more{color:var(--accent);font-size:12px;font-weight:500;background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:gap .18s;padding:0}
-.read-more:hover{gap:7px}
-.section-title{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:.85rem;display:flex;align-items:center;gap:10px}
-.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.article-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:13px;margin-bottom:2rem}
-.article-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.05rem;cursor:pointer;transition:all .2s;animation:slideUp .4s ease both;display:flex;flex-direction:column}
-.article-card:hover{border-color:rgba(255,255,255,.14);transform:translateY(-2px);background:var(--bg3)}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
-.cat-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;font-family:var(--font-mono);padding:3px 7px;border-radius:4px;flex-shrink:0}
-.bm-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;transition:color .18s;padding:0;line-height:1;flex-shrink:0;margin-left:6px}
-.bm-btn:hover,.bm-btn.saved{color:var(--gold)}
-.article-card h3{font-family:var(--font-head);font-size:.93rem;font-weight:700;line-height:1.35;margin-bottom:.42rem}
-.card-summary{font-size:12.5px;color:var(--muted);line-height:1.55;flex:1;margin-bottom:.75rem}
-.card-footer{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);padding-top:.6rem;border-top:1px solid var(--border);margin-top:auto}
-.tag-tech{background:rgba(0,212,255,.1);color:var(--accent)}
-.tag-finance{background:rgba(61,255,192,.1);color:var(--green)}
-.tag-science{background:rgba(124,92,252,.12);color:var(--accent2)}
-.tag-career{background:rgba(245,200,66,.1);color:var(--gold)}
-.tag-culture{background:rgba(255,107,107,.1);color:var(--accent3)}
-.tag-travel{background:rgba(91,184,255,.1);color:#5bb8ff}
-.tag-health{background:rgba(61,255,192,.08);color:#52d9a0}
-.tag-education{background:rgba(245,200,66,.08);color:#e8b84b}
-.tag-history{background:rgba(255,107,107,.08);color:#e07878}
-.tag-economy{background:rgba(61,255,192,.1);color:var(--green)}
-.tag-sports{background:rgba(255,107,107,.12);color:var(--accent3)}
-.tag-media{background:rgba(124,92,252,.1);color:var(--accent2)}
-.tag-language{background:rgba(0,212,255,.1);color:var(--accent)}
-.tag-ai{background:rgba(0,212,255,.1);color:var(--accent)}
-.tag-law{background:rgba(245,200,66,.1);color:var(--gold)}
-.tag-default{background:rgba(255,255,255,.06);color:var(--muted)}
-.skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:13px;margin-bottom:2rem}
-.skeleton{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.05rem;animation:pulse 1.6s ease infinite}
-.skel-line{height:11px;background:var(--bg3);border-radius:4px;margin-bottom:8px}
-.skel-line.s{width:55%}.skel-line.t{height:16px;margin-bottom:10px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.empty{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
-.empty .ei{font-size:42px;margin-bottom:.8rem}
-.empty h3{font-family:var(--font-head);font-size:1.2rem;color:var(--text);margin-bottom:.35rem}
-.detail-panel{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-start;justify-content:flex-end;pointer-events:none}
-.detail-panel.open{pointer-events:all}
-.detail-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s}
-.detail-panel.open .detail-backdrop{opacity:1}
-.detail-drawer{position:relative;z-index:1;width:min(560px,100vw);height:100vh;background:var(--bg2);border-left:1px solid var(--border);overflow-y:auto;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);padding:1.6rem}
-.detail-panel.open .detail-drawer{transform:translateX(0)}
-.close-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:background .2s;margin-left:auto;margin-bottom:1rem;flex-shrink:0}
-.close-btn:hover{background:rgba(255,255,255,.08)}
-.detail-title{font-family:var(--font-head);font-size:1.45rem;font-weight:700;line-height:1.3;margin-bottom:.8rem}
-.detail-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
-.detail-meta a{color:var(--accent);text-decoration:none}
-.detail-meta a:hover{text-decoration:underline}
-.ai-box{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-radius:9px;padding:.85rem 1rem;margin-bottom:1.2rem}
-.ai-label{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;font-family:var(--font-mono);margin-bottom:5px}
-.ai-box p{font-size:13px;color:var(--muted);line-height:1.6}
-.detail-body{font-size:14px;line-height:1.75;color:#c4c4d0}
-.detail-body p{margin-bottom:1rem}
-.detail-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid var(--border)}
-.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.95rem;margin-bottom:1.2rem}
-.profile-card h4{font-size:13px;font-weight:600;margin-bottom:2px}
-.profile-card p{font-size:11px;color:var(--muted)}
-.profile-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.mini-tag{font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--muted)}
-.trending-item{padding:.7rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .15s}
-.trending-item:last-child{border-bottom:none}
-.trending-item:hover h4{color:var(--accent)}
-.trending-num{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:2px}
-.trending-item h4{font-size:12.5px;font-weight:600;line-height:1.35}
-.trending-item .tm{font-size:10px;color:var(--muted);margin-top:2px}
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px 16px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;transform:translateY(70px);opacity:0;transition:all .28s;pointer-events:none}
-.toast.show{transform:translateY(0);opacity:1}
-.page-section{display:none}
-.page-section.active{display:block}
+
+/* scrollbar */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:3px}
-@media(max-width:900px){.right-rail{display:none}}
-@media(max-width:640px){.sidebar{display:none}.content{padding:1rem}.cat-grid{grid-template-columns:repeat(2,1fr)}.logo-text span{display:none}}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* ══════════════════════════════════════
+   TYPOGRAPHY SYSTEM
+══════════════════════════════════════ */
+.t-display{font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:600;line-height:1.1;letter-spacing:-.01em}
+.t-headline{font-family:var(--serif);font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:600;line-height:1.25}
+.t-title{font-family:var(--serif);font-size:1.1rem;font-weight:600;line-height:1.3}
+.t-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--fg3)}
+.t-body{font-size:14px;line-height:1.7;color:var(--fg2)}
+.t-small{font-size:12px;color:var(--fg3)}
+
+/* ══════════════════════════════════════
+   BUTTONS & INPUTS
+══════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s var(--ease);text-decoration:none;white-space:nowrap}
+.btn-gold{background:var(--gold);color:var(--ink);font-weight:600}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--fg2);border:1px solid var(--rule2)}
+.btn-outline:hover{color:var(--fg);border-color:rgba(255,255,255,.25)}
+.btn-ghost{background:transparent;color:var(--fg3);border:none;padding:7px 12px}
+.btn-ghost:hover{color:var(--fg);background:rgba(255,255,255,.04)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:6px;justify-content:center;font-size:15px}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:1rem}
+.field label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3)}
+.field input,.field select,.field textarea{background:var(--ink3);border:1px solid var(--rule);border-radius:6px;color:var(--fg);font-family:var(--sans);font-size:14px;padding:10px 13px;outline:none;transition:border-color .2s;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
+.field select option{background:var(--ink3)}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6}
+.field input[type=checkbox]{width:auto;accent-color:var(--gold)}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,13,13,.92);
+  backdrop-filter:blur(24px) saturate(1.4);
+  border-bottom:1px solid var(--rule);
+  height:58px;
+  display:flex;align-items:center;
+  padding:0 2rem;
+  gap:2rem;
+}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit;flex-shrink:0}
+.logo-mark{
+  width:36px;height:36px;
+  background:var(--ink3);
+  border:1px solid var(--rule2);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:20px;font-weight:700;
+  color:var(--gold);
+  position:relative;
+}
+.logo-mark::after{
+  content:'';position:absolute;top:-3px;right:-3px;
+  width:7px;height:7px;
+  background:var(--gold);
+  border-radius:50%;
+  border:2px solid var(--ink);
+}
+.logo-words{display:flex;flex-direction:column;line-height:1.1}
+.logo-words strong{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.01em}
+.logo-words em{font-size:10px;font-style:normal;color:var(--fg3);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.header-center{flex:1;display:flex;justify-content:center}
+.header-nav{display:flex;align-items:center;gap:2px}
+.nav-pill{padding:5px 14px;border-radius:20px;font-size:13px;font-weight:500;color:var(--fg3);cursor:pointer;transition:all .18s;border:none;background:none;font-family:var(--sans)}
+.nav-pill:hover{color:var(--fg)}
+.nav-pill.active{background:rgba(232,201,126,.12);color:var(--gold)}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* profile mode switcher */
+.mode-switcher{display:flex;align-items:center;gap:3px;background:var(--ink3);border:1px solid var(--rule);border-radius:20px;padding:3px}
+.mode-btn{padding:4px 12px;border-radius:16px;font-size:12px;cursor:pointer;transition:all .18s;color:var(--fg3);border:none;background:none;font-family:var(--sans);white-space:nowrap}
+.mode-btn.active{background:var(--gold);color:var(--ink);font-weight:600}
+
+/* ══════════════════════════════════════
+   PAGE SYSTEM
+══════════════════════════════════════ */
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════
+   AUTH MODAL
+══════════════════════════════════════ */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .25s ease}
+.overlay.hidden{display:none}
+.modal{background:var(--ink2);border:1px solid var(--rule2);border-radius:16px;padding:2.25rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:1.1rem;right:1.1rem;background:var(--ink3);border:1px solid var(--rule);border-radius:6px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg3);font-size:14px;transition:all .18s}
+.modal-close:hover{color:var(--fg)}
+.modal-header{margin-bottom:1.5rem}
+.modal-header h2{font-family:var(--serif);font-size:1.75rem;font-weight:600;margin-bottom:.25rem}
+.modal-header p{color:var(--fg3);font-size:13px}
+.modal-tab-row{display:flex;gap:3px;background:var(--ink3);padding:3px;border-radius:8px;margin-bottom:1.5rem}
+.modal-tab{flex:1;padding:7px;text-align:center;border-radius:6px;cursor:pointer;font-size:13px;color:var(--fg3);transition:all .18s;border:none;background:none;font-family:var(--sans)}
+.modal-tab.active{background:var(--ink4);color:var(--fg)}
+.auth-form{display:none}
+.auth-form.active{display:block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.auth-divider{text-align:center;color:var(--fg3);font-size:12px;margin:1rem 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 2rem);height:1px;background:var(--rule)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;flex-shrink:0}
+
+/* ══════════════════════════════════════
+   ONBOARDING STEPS
+══════════════════════════════════════ */
+.step{display:none}
+.step.active{display:block}
+.step-indicators{display:flex;gap:5px;margin-bottom:1.5rem}
+.step-dot{height:3px;border-radius:2px;background:var(--rule2);transition:all .3s;flex:1}
+.step-dot.done{background:var(--gold2)}
+.step-dot.active{background:var(--gold)}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.cat-chip{padding:10px 8px;border:1px solid var(--rule);border-radius:8px;cursor:pointer;text-align:center;transition:all .18s;background:var(--ink3);user-select:none}
+.cat-chip .ci{font-size:18px;display:block;margin-bottom:3px}
+.cat-chip .cl{font-size:11px;color:var(--fg3);line-height:1.2}
+.cat-chip:hover{border-color:var(--rule2)}
+.cat-chip.sel{border-color:var(--gold);background:rgba(232,201,126,.08);color:var(--gold)}
+.cat-chip.sel .cl{color:var(--gold)}
+.depth-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.depth-card{padding:14px 10px;border:1px solid var(--rule);border-radius:8px;cursor:pointer;text-align:center;transition:all .18s;background:var(--ink3)}
+.depth-card strong{display:block;font-size:13px;margin-bottom:3px}
+.depth-card span{font-size:11px;color:var(--fg3)}
+.depth-card.sel{border-color:var(--gold);background:rgba(232,201,126,.08)}
+.depth-card.sel strong{color:var(--gold)}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--rule)}
+
+/* ══════════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════════ */
+.layout{display:flex;min-height:calc(100vh - 58px)}
+.sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--rule);padding:1.5rem 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;display:flex;flex-direction:column}
+.sb-section{margin-bottom:1.5rem}
+.sb-label{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);padding:0 1.1rem;margin-bottom:6px}
+.sb-link{display:flex;align-items:center;gap:9px;padding:8px 1.1rem;cursor:pointer;font-size:13px;color:var(--fg3);border-left:2px solid transparent;transition:all .16s;position:relative}
+.sb-link:hover{color:var(--fg);background:rgba(255,255,255,.02)}
+.sb-link.active{color:var(--fg);border-left-color:var(--gold);background:rgba(232,201,126,.04)}
+.sb-link .ic{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;font-family:var(--mono)}
+
+.content-area{flex:1;min-width:0;padding:2rem 2.25rem}
+.rail{width:240px;flex-shrink:0;padding:2rem 1.5rem 2rem 0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+
+/* ══════════════════════════════════════
+   FEED HEADER
+══════════════════════════════════════ */
+.feed-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.75rem;padding-bottom:1.25rem;border-bottom:1px solid var(--rule)}
+.feed-header-left h1{font-family:var(--serif);font-size:2rem;font-weight:600;margin-bottom:.2rem}
+.feed-header-left p{font-size:13px;color:var(--fg3)}
+.feed-header-right{display:flex;gap:8px;align-items:center}
+
+/* search */
+.search-row{display:flex;align-items:center;gap:8px;margin-bottom:1.5rem}
+.search-box{flex:1;position:relative;max-width:400px}
+.search-box input{width:100%;padding:9px 13px 9px 36px;background:var(--ink2);border:1px solid var(--rule);border-radius:6px;color:var(--fg);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--gold)}
+.search-box::before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--fg3);font-size:16px;pointer-events:none}
+.stat-chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:12px;background:rgba(232,201,126,.08);color:var(--gold);border:1px solid rgba(232,201,126,.2)}
+
+/* profession banner — shows when role is set */
+.role-banner{background:var(--ink2);border:1px solid var(--rule);border-radius:8px;padding:.75rem 1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px}
+.role-banner-icon{font-size:18px}
+.role-banner p{font-size:13px;color:var(--fg2)}
+.role-banner strong{color:var(--fg)}
+.role-banner.hidden{display:none}
+
+/* ══════════════════════════════════════
+   FEATURED ARTICLE
+══════════════════════════════════════ */
+.featured{background:var(--ink2);border:1px solid var(--rule);border-radius:12px;padding:2rem;margin-bottom:1.75rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.featured:hover{border-color:var(--rule2)}
+.featured::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(232,201,126,.05) 0%,transparent 60%);pointer-events:none}
+.feat-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.feat-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.featured h2{font-family:var(--serif);font-size:1.65rem;font-weight:600;line-height:1.25;margin-bottom:.75rem;max-width:700px}
+.featured .summary{font-size:14px;color:var(--fg2);line-height:1.7;margin-bottom:1rem;max-width:680px}
+.feat-footer{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--fg3);flex-wrap:wrap}
+.feat-source{color:var(--fg);font-weight:500}
+.feat-action{color:var(--gold);font-size:12px;background:none;border:none;cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:4px;transition:gap .18s;font-family:var(--sans)}
+.feat-action:hover{gap:7px}
+
+/* ══════════════════════════════════════
+   ARTICLE GRID
+══════════════════════════════════════ */
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.section-head h3{font-family:var(--serif);font-size:1.1rem;font-weight:600}
+.section-head::after{content:'';flex:1;height:1px;background:var(--rule)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(275px,1fr));gap:14px;margin-bottom:2rem}
+.card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s var(--ease);display:flex;flex-direction:column;animation:fadeIn .4s ease both;position:relative}
+.card:hover{border-color:var(--rule2);transform:translateY(-2px);background:var(--ink3)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.65rem;gap:6px}
+.tag{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;border-radius:4px;flex-shrink:0}
+.card-actions{display:flex;gap:2px;flex-shrink:0}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--fg3);font-size:13px;padding:3px;border-radius:4px;transition:color .18s;line-height:1}
+.icon-btn:hover{color:var(--fg)}
+.icon-btn.active{color:var(--gold)}
+.card h3{font-family:var(--serif);font-size:1rem;font-weight:600;line-height:1.35;margin-bottom:.4rem}
+.card .summary{font-size:12.5px;color:var(--fg3);line-height:1.55;flex:1;margin-bottom:.75rem}
+.card-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--fg3);padding-top:.6rem;border-top:1px solid var(--rule);margin-top:auto}
+.card-note-indicator{font-size:10px;color:var(--gold);display:flex;align-items:center;gap:3px;margin-top:.4rem}
+
+/* tag colours */
+.tg-tech{background:rgba(110,176,212,.1);color:var(--sky)}
+.tg-finance{background:rgba(126,184,150,.1);color:var(--sage)}
+.tg-science{background:rgba(155,143,196,.12);color:var(--lavender)}
+.tg-career{background:rgba(232,201,126,.1);color:var(--gold)}
+.tg-culture{background:rgba(224,120,120,.1);color:var(--rose)}
+.tg-economy{background:rgba(126,184,150,.1);color:var(--sage)}
+.tg-health{background:rgba(78,205,196,.1);color:var(--teal)}
+.tg-education{background:rgba(232,201,126,.08);color:var(--gold2)}
+.tg-history{background:rgba(224,120,120,.08);color:var(--rose)}
+.tg-travel{background:rgba(110,176,212,.1);color:var(--sky)}
+.tg-sports{background:rgba(224,120,120,.12);color:var(--rose)}
+.tg-media{background:rgba(155,143,196,.1);color:var(--lavender)}
+.tg-language{background:rgba(110,176,212,.1);color:var(--sky)}
+.tg-ai{background:rgba(78,205,196,.1);color:var(--teal)}
+.tg-law{background:rgba(232,201,126,.1);color:var(--gold)}
+.tg-default{background:rgba(255,255,255,.06);color:var(--fg3)}
+
+/* ══════════════════════════════════════
+   SKELETON
+══════════════════════════════════════ */
+.skel{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r);padding:1.1rem;animation:shimmer 1.6s ease infinite}
+.sl{height:11px;background:var(--ink3);border-radius:3px;margin-bottom:8px}
+.sl.s{width:50%}.sl.t{height:16px;margin-bottom:10px}
+@keyframes shimmer{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ══════════════════════════════════════
+   DETAIL DRAWER
+══════════════════════════════════════ */
+.drawer-overlay{position:fixed;inset:0;z-index:150;pointer-events:none;display:flex;justify-content:flex-end}
+.drawer-overlay.open{pointer-events:all}
+.drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s}
+.drawer-overlay.open .drawer-bg{opacity:1}
+.drawer{position:relative;z-index:1;width:min(580px,100vw);height:100vh;background:var(--ink2);border-left:1px solid var(--rule);overflow-y:auto;transform:translateX(100%);transition:transform .35s var(--ease);padding:1.75rem}
+.drawer-overlay.open .drawer{transform:translateX(0)}
+.drawer-header{display:flex;justify-content:flex-end;margin-bottom:1.1rem}
+.drawer-content h2{font-family:var(--serif);font-size:1.55rem;font-weight:600;line-height:1.3;margin-bottom:.85rem}
+.drawer-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--fg3);padding-bottom:1.1rem;border-bottom:1px solid var(--rule);margin-bottom:1.1rem}
+.drawer-meta a{color:var(--gold);text-decoration:none}
+.drawer-meta a:hover{text-decoration:underline}
+.insight-box{background:rgba(232,201,126,.04);border:1px solid rgba(232,201,126,.15);border-radius:8px;padding:.9rem 1rem;margin-bottom:1.2rem}
+.insight-label{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.insight-box p{font-size:13px;color:var(--fg2);line-height:1.65}
+.drawer-body{font-size:14px;line-height:1.8;color:var(--fg2)}
+.drawer-body p{margin-bottom:1rem}
+.note-section{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
+.note-section h4{font-family:var(--serif);font-size:1rem;font-weight:600;margin-bottom:.75rem}
+.note-saved{background:var(--ink3);border:1px solid var(--rule);border-radius:6px;padding:.85rem;font-size:13px;color:var(--fg2);line-height:1.6;margin-bottom:.75rem;display:none}
+.note-saved.has-note{display:block}
+.drawer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
+
+/* ══════════════════════════════════════
+   RIGHT RAIL
+══════════════════════════════════════ */
+.rail-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r);padding:1rem;margin-bottom:1.2rem}
+.rail-name{font-family:var(--serif);font-size:1rem;font-weight:600;margin-bottom:2px}
+.rail-role{font-size:12px;color:var(--fg3);margin-bottom:.7rem}
+.rail-tags{display:flex;flex-wrap:wrap;gap:4px}
+.mini-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.05);color:var(--fg3)}
+.trending-item{padding:.7rem 0;border-bottom:1px solid var(--rule);cursor:pointer;transition:color .15s}
+.trending-item:last-child{border-bottom:none}
+.trending-item:hover .ti-title{color:var(--gold)}
+.ti-num{font-family:var(--mono);font-size:10px;color:var(--fg3);margin-bottom:2px}
+.ti-title{font-size:12.5px;font-weight:500;line-height:1.3;transition:color .15s}
+.ti-sub{font-size:10px;color:var(--fg3);margin-top:2px}
+
+/* heatmap */
+.heatmap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:.75rem}
+.hm-cell{border-radius:6px;padding:8px 6px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.hm-cell .hm-icon{font-size:14px;display:block;margin-bottom:2px}
+.hm-cell .hm-label{font-size:9px;color:var(--fg3);font-family:var(--mono)}
+.hm-cell .hm-count{font-size:10px;font-weight:600;margin-top:1px}
+.hm-0{background:rgba(255,255,255,.03)}
+.hm-1{background:rgba(232,201,126,.08)}
+.hm-2{background:rgba(232,201,126,.16)}
+.hm-3{background:rgba(232,201,126,.26)}
+.hm-4{background:rgba(232,201,126,.38)}
+
+/* ══════════════════════════════════════
+   BOOKMARKS PAGE
+══════════════════════════════════════ */
+.page-title{font-family:var(--serif);font-size:2rem;font-weight:600;margin-bottom:.25rem}
+.page-subtitle{font-size:13px;color:var(--fg3);margin-bottom:1.75rem}
+
+/* ══════════════════════════════════════
+   DIGEST PAGE
+══════════════════════════════════════ */
+.digest-card{background:var(--ink2);border:1px solid var(--rule);border-radius:12px;padding:1.75rem;margin-bottom:1.5rem;max-width:560px}
+.digest-card h3{font-family:var(--serif);font-size:1.25rem;font-weight:600;margin-bottom:.5rem}
+.digest-card p{font-size:13px;color:var(--fg3);margin-bottom:1.25rem;line-height:1.6}
+.freq-opts{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.freq-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--rule);background:var(--ink3);color:var(--fg3);font-size:12px;cursor:pointer;transition:all .18s;font-family:var(--sans)}
+.freq-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(232,201,126,.08)}
+.digest-status{font-size:12px;color:var(--sage);display:flex;align-items:center;gap:5px;margin-top:.75rem}
+.digest-status.hidden{display:none}
+
+/* ══════════════════════════════════════
+   PROFILES PAGE
+══════════════════════════════════════ */
+.profiles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:2rem}
+.profile-card-item{background:var(--ink2);border:1px solid var(--rule);border-radius:12px;padding:1.5rem;cursor:pointer;transition:all .2s;position:relative}
+.profile-card-item:hover{border-color:var(--rule2)}
+.profile-card-item.current{border-color:var(--gold)}
+.profile-card-item .pc-icon{font-size:28px;margin-bottom:.75rem}
+.profile-card-item h3{font-family:var(--serif);font-size:1.1rem;font-weight:600;margin-bottom:.25rem}
+.profile-card-item p{font-size:12px;color:var(--fg3)}
+.pc-badge{position:absolute;top:1rem;right:1rem;font-size:9px;background:var(--gold);color:var(--ink);padding:2px 7px;border-radius:10px;font-family:var(--mono);font-weight:600}
+.add-profile{border:1px dashed var(--rule2);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;color:var(--fg3);font-size:13px;transition:all .2s}
+.add-profile:hover{border-color:var(--gold);color:var(--gold);background:rgba(232,201,126,.03)}
+.add-profile .ap-icon{font-size:24px}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;background:var(--ink3);border:1px solid var(--rule2);border-radius:8px;padding:10px 16px;font-size:13px;color:var(--fg);display:flex;align-items:center;gap:8px;transform:translateY(60px);opacity:0;transition:all .28s var(--ease);pointer-events:none;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
+
+/* empty state */
+.empty{text-align:center;padding:4rem 1rem;color:var(--fg3)}
+.empty-icon{font-size:42px;margin-bottom:.9rem;display:block}
+.empty h3{font-family:var(--serif);font-size:1.3rem;color:var(--fg);margin-bottom:.4rem}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:1100px){.rail{display:none}}
+@media(max-width:768px){.sidebar{display:none}.content-area{padding:1.25rem}.header-nav{display:none}}
+@media(max-width:480px){.cat-grid{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}.logo-words em{display:none}.depth-cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- ONBOARDING -->
-<div class="modal-overlay" id="onboardingModal">
-  <div class="modal">
-    <div class="modal-step active" id="step1">
-      <div class="step-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
-      <div style="font-size:28px;margin-bottom:.4rem">👋</div>
-      <h2>Welcome to<br>News You Can Use</h2>
-      <p>Personalize your intelligence feed in 60 seconds.</p>
-      <label class="field-label">Your name</label>
-      <input type="text" id="userName" placeholder="e.g. Adam"/>
-      <label class="field-label">Your profession or role</label>
-      <input type="text" id="userRole" placeholder="e.g. Project Manager, HR Director, Student…"/>
-      <label class="field-label">What describes you best?</label>
-      <select id="userType">
-        <option value="">Select one…</option>
-        <option value="professional">Working Professional</option>
-        <option value="student">Student</option>
-        <option value="entrepreneur">Entrepreneur / Founder</option>
-        <option value="learner">Curious Lifelong Learner</option>
-        <option value="executive">Executive / Leader</option>
-      </select>
-      <div class="modal-footer"><button class="btn btn-primary" onclick="goStep(2)">Continue →</button></div>
+<!-- ═══════════════════════════════
+     AUTH MODAL
+═══════════════════════════════ -->
+<div class="overlay hidden" id="authModal">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    <div class="modal-header">
+      <h2>Your Account</h2>
+      <p>Save preferences & sync across devices</p>
     </div>
-    <div class="modal-step" id="step2">
-      <div class="step-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
-      <h2>Choose your topics</h2>
-      <p>Pick 2 or more — your feed is built around these.</p>
-      <div class="cat-grid" id="catGrid"></div>
+    <div class="modal-tab-row">
+      <button class="modal-tab active" onclick="authTab('signin')">Sign In</button>
+      <button class="modal-tab" onclick="authTab('signup')">Create Account</button>
+    </div>
+    <!-- Sign In -->
+    <div class="auth-form active" id="form-signin">
+      <div class="field"><label>Email</label><input type="email" id="si-email" placeholder="you@example.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="••••••••"/></div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doSignIn()">Sign In →</button>
+      <div class="auth-divider">or continue as guest</div>
+      <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="closeModal('authModal')">Continue Without Account</button>
+    </div>
+    <!-- Sign Up -->
+    <div class="auth-form" id="form-signup">
+      <div class="form-row">
+        <div class="field"><label>First Name</label><input type="text" id="su-first" placeholder="Adam"/></div>
+        <div class="field"><label>Last Name</label><input type="text" id="su-last" placeholder="Smith"/></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="8+ characters"/></div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doSignUp()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     ONBOARDING MODAL
+═══════════════════════════════ -->
+<div class="overlay hidden" id="onboardModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="ob-modal-title">Set Up Your Feed</h2>
+      <p id="ob-modal-sub">Takes about 60 seconds</p>
+    </div>
+    <!-- Step 1: Identity -->
+    <div class="step active" id="ob1">
+      <div class="step-indicators"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div></div>
+      <div class="field"><label>Your Name</label><input type="text" id="ob-name" placeholder="e.g. Adam"/></div>
+      <div class="field"><label>Your Profession / Role</label><input type="text" id="ob-role" placeholder="e.g. Project Manager, HR Director, Student…"/></div>
+      <div class="field"><label>Industry or Field</label>
+        <select id="ob-industry">
+          <option value="">Select your field…</option>
+          <option>Technology & Engineering</option>
+          <option>Human Resources & People Ops</option>
+          <option>Finance & Accounting</option>
+          <option>Healthcare & Medicine</option>
+          <option>Law & Compliance</option>
+          <option>Marketing & Communications</option>
+          <option>Education & Research</option>
+          <option>Entrepreneurship & Startups</option>
+          <option>Government & Policy</option>
+          <option>Creative & Design</option>
+          <option>Operations & Supply Chain</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Profile Mode Name</label><input type="text" id="ob-modename" placeholder='e.g. "Work" or "Weekend"' value="Work"/></div>
+      <div class="modal-footer"><button class="btn btn-gold" onclick="obStep(2)">Next →</button></div>
+    </div>
+    <!-- Step 2: Topics -->
+    <div class="step" id="ob2">
+      <div class="step-indicators"><div class="step-dot done"></div><div class="step-dot active"></div><div class="step-dot"></div></div>
+      <p style="font-size:13px;color:var(--fg3);margin-bottom:1rem">Pick 2 or more topics — feeds are filtered by your profession automatically.</p>
+      <div class="cat-grid" id="obCatGrid"></div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
-        <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
+        <button class="btn btn-outline" onclick="obStep(1)">← Back</button>
+        <button class="btn btn-gold" onclick="obStep(3)">Next →</button>
       </div>
     </div>
-    <div class="modal-step" id="step3">
-      <div class="step-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
-      <h2>Reading depth?</h2>
-      <p>Shapes how much context appears per article.</p>
-      <label class="depth-opt"><input type="radio" name="depth" value="quick"/>
-        <div><strong>Quick Scan</strong><span>Headlines + 1-line summaries</span></div></label>
-      <label class="depth-opt"><input type="radio" name="depth" value="standard" checked/>
-        <div><strong>Standard</strong><span>Full summaries with context</span></div></label>
-      <label class="depth-opt"><input type="radio" name="depth" value="deep"/>
-        <div><strong>Deep Dive</strong><span>Extended reading, full body text</span></div></label>
-      <div class="modal-footer" style="margin-top:1rem">
-        <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
-        <button class="btn btn-primary" onclick="saveProfile()">Build My Feed ✦</button>
+    <!-- Step 3: Depth -->
+    <div class="step" id="ob3">
+      <div class="step-indicators"><div class="step-dot done"></div><div class="step-dot done"></div><div class="step-dot active"></div></div>
+      <p style="font-size:13px;color:var(--fg3);margin-bottom:1rem">How much context do you want per article?</p>
+      <div class="depth-cards">
+        <div class="depth-card" data-depth="quick" onclick="selDepth(this)"><strong>Quick</strong><span>Headlines only</span></div>
+        <div class="depth-card sel" data-depth="standard" onclick="selDepth(this)"><strong>Standard</strong><span>Full summaries</span></div>
+        <div class="depth-card" data-depth="deep" onclick="selDepth(this)"><strong>Deep</strong><span>Extended reading</span></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="obStep(2)">← Back</button>
+        <button class="btn btn-gold" onclick="saveProfile()">Save Profile ✦</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- HEADER -->
+<!-- ═══════════════════════════════
+     ADD NOTE MODAL
+═══════════════════════════════ -->
+<div class="overlay hidden" id="noteModal">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeModal('noteModal')">✕</button>
+    <div class="modal-header"><h2>Add a Note</h2><p id="note-article-title" style="color:var(--fg3);font-size:13px"></p></div>
+    <input type="hidden" id="note-article-id"/>
+    <div class="field"><label>Your thoughts</label><textarea id="note-text" rows="5" placeholder="What did you think? Key takeaways, questions, ideas…"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('noteModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     HEADER
+═══════════════════════════════ -->
 <header>
-  <div class="logo" onclick="showPage('feed')">
-    <div class="logo-icon">N</div>
-    <div class="logo-text"><strong>News You Can Use</strong><span>Intelligence Feed</span></div>
+  <div class="logo" onclick="navigate('feed')">
+    <div class="logo-mark">N</div>
+    <div class="logo-words"><strong>News You Can Use</strong><em>Intelligence Feed</em></div>
+  </div>
+  <div class="header-center">
+    <nav class="header-nav">
+      <button class="nav-pill active" onclick="navigate('feed',this)">Feed</button>
+      <button class="nav-pill" onclick="navigate('bookmarks',this)">Saved</button>
+      <button class="nav-pill" onclick="navigate('profiles',this)">Profiles</button>
+      <button class="nav-pill" onclick="navigate('digest',this)">Digest</button>
+    </nav>
   </div>
   <div class="header-right">
-    <button class="btn btn-ghost" onclick="showPage('bookmarks')">🔖 Saved</button>
-    <button class="btn btn-ghost" onclick="openOnboarding()">⚙ Prefs</button>
-    <button class="btn btn-primary" onclick="refreshFeed()">↻ Refresh</button>
+    <div class="mode-switcher" id="modeSwitcher"></div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('onboardModal')">⚙</button>
+    <div id="authArea">
+      <button class="btn btn-outline btn-sm" onclick="openModal('authModal')">Sign In</button>
+    </div>
   </div>
 </header>
 
-<main>
+<!-- ═══════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════ -->
+<div class="layout">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-label">Navigation</div>
-      <div class="sidebar-link active" id="nav-all" onclick="filterCat('all',this)"><span class="ic">◉</span>All Topics</div>
-      <div class="sidebar-link" onclick="showPage('bookmarks')"><span class="ic">🔖</span>Saved Articles</div>
+    <div class="sb-section">
+      <div class="sb-label">My Feed</div>
+      <div class="sb-link active" id="sb-all" onclick="filterCat('all',this)"><span class="ic">◉</span>All Topics</div>
+      <div class="sb-link" onclick="navigate('bookmarks')"><span class="ic">🔖</span>Saved <span class="sb-badge" id="sb-bm-count">0</span></div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">My Topics</div>
-      <div id="sidebarCats"></div>
+    <div class="sb-section">
+      <div class="sb-label">Topics</div>
+      <div id="sidebarTopics"></div>
+    </div>
+    <div style="margin-top:auto;padding:0 1.1rem 1rem">
+      <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center" onclick="refreshFeed()">↻ Refresh Feed</button>
     </div>
   </aside>
 
   <!-- CONTENT -->
-  <div class="content">
-    <div class="page-section active" id="feedPage">
-      <div class="page-header">
-        <h1 id="feedTitle">Your Intelligence Feed</h1>
-        <p id="feedSubtitle">Real news · Trusted RSS sources · Personalized</p>
-      </div>
-      <div class="status-bar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="Search articles…" oninput="handleSearch(this.value)"/></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="feed-count" id="feedCount"></span>
-          <span class="source-badge" id="sourceLabel">Loading…</span>
+  <div class="content-area">
+
+    <!-- FEED PAGE -->
+    <div class="page active" id="page-feed">
+      <div class="feed-header">
+        <div class="feed-header-left">
+          <h1 id="feedTitle">Your Intelligence Feed</h1>
+          <p id="feedSubtitle">Personalized · Real news · Updated now</p>
         </div>
+        <div class="feed-header-right">
+          <span class="chip" id="srcChip">—</span>
+          <span class="chip" id="countChip">—</span>
+        </div>
+      </div>
+      <div class="role-banner hidden" id="roleBanner">
+        <span class="role-banner-icon">💼</span>
+        <p id="roleBannerText"></p>
+      </div>
+      <div class="search-row">
+        <div class="search-box"><input type="text" id="searchInput" placeholder="Search your feed…" oninput="handleSearch(this.value)"/></div>
       </div>
       <div id="featuredArea"></div>
       <div id="articlesArea"></div>
     </div>
-    <div class="page-section" id="bookmarksPage">
-      <div class="page-header"><h1>Saved Articles</h1><p>Your personal reading list</p></div>
-      <div id="bookmarksArea"></div>
+
+    <!-- BOOKMARKS PAGE -->
+    <div class="page" id="page-bookmarks">
+      <div class="page-title">Saved Articles</div>
+      <div class="page-subtitle">Your personal reading list · <span id="bmCountLabel">0 articles</span></div>
+      <div id="bmGrid"></div>
     </div>
-  </div>
+
+    <!-- PROFILES PAGE -->
+    <div class="page" id="page-profiles">
+      <div class="page-title">My Profiles</div>
+      <div class="page-subtitle">Switch between reading modes — work, weekend, or anything you choose</div>
+      <div class="profiles-grid" id="profilesGrid"></div>
+    </div>
+
+    <!-- DIGEST PAGE -->
+    <div class="page" id="page-digest">
+      <div class="page-title">Daily Email Digest</div>
+      <div class="page-subtitle">Get your personalized feed delivered to your inbox</div>
+      <div class="digest-card">
+        <h3>Subscribe to Your Digest</h3>
+        <p>We'll send you a curated summary of your top categories, filtered for your profession.</p>
+        <div class="field"><label>Your Email</label><input type="email" id="digestEmail" placeholder="you@example.com"/></div>
+        <div class="field"><label>Frequency</label>
+          <div class="freq-opts">
+            <button class="freq-btn active" data-freq="daily" onclick="selFreq(this)">Daily</button>
+            <button class="freq-btn" data-freq="weekdays" onclick="selFreq(this)">Weekdays</button>
+            <button class="freq-btn" data-freq="weekly" onclick="selFreq(this)">Weekly</button>
+          </div>
+        </div>
+        <div class="field"><label>Include categories</label>
+          <div id="digestCats" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+        </div>
+        <div class="field" style="margin-top:.5rem">
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;letter-spacing:0">
+            <input type="checkbox" id="digestNotes" style="width:auto"/> Include my notes in digest
+          </label>
+        </div>
+        <button class="btn btn-gold" onclick="subscribeDigest()" style="margin-top:.5rem">Subscribe to Digest →</button>
+        <div class="digest-status hidden" id="digestStatus">✓ You're subscribed! First digest arrives tomorrow.</div>
+      </div>
+      <div class="digest-card">
+        <h3>Preview Today's Digest</h3>
+        <p>See what your digest would look like based on today's feed.</p>
+        <button class="btn btn-outline" onclick="previewDigest()">Preview Digest →</button>
+      </div>
+    </div>
+
+  </div><!-- .content-area -->
 
   <!-- RIGHT RAIL -->
-  <aside class="right-rail">
-    <div id="profileCard"></div>
-    <div class="section-title" style="font-size:.88rem">Trending</div>
-    <div id="trendingArea"></div>
+  <aside class="rail">
+    <div id="railProfile"></div>
+    <div class="rail-card" id="heatmapCard" style="display:none">
+      <div style="font-family:var(--serif);font-size:1rem;font-weight:600;margin-bottom:.25rem">Reading Heatmap</div>
+      <div class="t-small" style="margin-bottom:.5rem">Topics you've explored</div>
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+    </div>
+    <div>
+      <div class="section-head" style="margin-top:.5rem"><h3>Trending</h3></div>
+      <div id="trendingArea"></div>
+    </div>
   </aside>
-</main>
+</div><!-- .layout -->
 
 <!-- DETAIL DRAWER -->
-<div class="detail-panel" id="detailPanel">
-  <div class="detail-backdrop" onclick="closeDetail()"></div>
-  <div class="detail-drawer">
-    <button class="close-btn" onclick="closeDetail()">✕</button>
-    <div id="detailContent"></div>
+<div class="drawer-overlay" id="drawerOverlay">
+  <div class="drawer-bg" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-header"><button class="btn btn-ghost btn-icon" onclick="closeDrawer()">✕</button></div>
+    <div id="drawerContent"></div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast"><span style="color:var(--gold)">✦</span><span id="toastMsg"></span></div>
-</div>
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
+</div><!-- .app -->
 
 <script>
-/* ─── CATEGORIES ─── */
-const ALL_CATS=[
-  {id:'tech',      label:'Technology',         icon:'💻',tag:'tag-tech'},
-  {id:'finance',   label:'Finance & Business',  icon:'📈',tag:'tag-finance'},
-  {id:'science',   label:'Science',             icon:'🔬',tag:'tag-science'},
-  {id:'career',    label:'Careers & HR',        icon:'💼',tag:'tag-career'},
-  {id:'economy',   label:'Economy',             icon:'🏛️',tag:'tag-economy'},
-  {id:'culture',   label:'Culture',             icon:'🎭',tag:'tag-culture'},
-  {id:'health',    label:'Health',              icon:'🧬',tag:'tag-health'},
-  {id:'education', label:'Education',           icon:'📚',tag:'tag-education'},
-  {id:'history',   label:'History',             icon:'🗿',tag:'tag-history'},
-  {id:'travel',    label:'Travel',              icon:'✈️',tag:'tag-travel'},
-  {id:'sports',    label:'Sports',              icon:'⚽',tag:'tag-sports'},
-  {id:'media',     label:'Podcasts & Media',    icon:'🎙️',tag:'tag-media'},
-  {id:'language',  label:'Languages',           icon:'🌐',tag:'tag-language'},
-  {id:'ai',        label:'AI & Future',         icon:'🤖',tag:'tag-ai'},
-  {id:'law',       label:'Law & Policy',        icon:'⚖️',tag:'tag-law'},
+/* ═══════════════════════════════════════════
+   CATEGORIES
+═══════════════════════════════════════════ */
+const CATS=[
+  {id:'tech',     label:'Technology',        icon:'💻',tg:'tg-tech'},
+  {id:'finance',  label:'Finance',           icon:'📈',tg:'tg-finance'},
+  {id:'science',  label:'Science',           icon:'🔬',tg:'tg-science'},
+  {id:'career',   label:'Careers & HR',      icon:'💼',tg:'tg-career'},
+  {id:'economy',  label:'Economy',           icon:'🏛️',tg:'tg-economy'},
+  {id:'culture',  label:'Culture',           icon:'🎭',tg:'tg-culture'},
+  {id:'health',   label:'Health',            icon:'🧬',tg:'tg-health'},
+  {id:'education',label:'Education',         icon:'📚',tg:'tg-education'},
+  {id:'history',  label:'History',           icon:'🗿',tg:'tg-history'},
+  {id:'travel',   label:'Travel',            icon:'✈️',tg:'tg-travel'},
+  {id:'sports',   label:'Sports',            icon:'⚽',tg:'tg-sports'},
+  {id:'media',    label:'Podcasts & Media',  icon:'🎙️',tg:'tg-media'},
+  {id:'language', label:'Languages',         icon:'🌐',tg:'tg-language'},
+  {id:'ai',       label:'AI & Future',       icon:'🤖',tg:'tg-ai'},
+  {id:'law',      label:'Law & Policy',      icon:'⚖️',tg:'tg-law'},
 ];
 
-/* ─── RSS SOURCES via rss2json.com public endpoint (CORS-friendly, no key needed) ─── */
-const RSS='https://api.rss2json.com/v1/api.json?rss_url=';
-const SOURCES={
-  tech:     [{n:'TechCrunch',     u:'https://techcrunch.com/feed/'},
-             {n:'The Verge',      u:'https://www.theverge.com/rss/index.xml'}],
-  finance:  [{n:'Investopedia',   u:'https://www.investopedia.com/feedbuilder/feed/getfeed/?feedName=rss_headline'},
-             {n:'MarketWatch',    u:'https://feeds.marketwatch.com/marketwatch/topstories/'}],
-  science:  [{n:'Science Daily',  u:'https://www.sciencedaily.com/rss/all.xml'},
-             {n:'New Scientist',  u:'https://www.newscientist.com/feed/home/'}],
-  career:   [{n:'HBR',            u:'https://feeds.hbr.org/harvardbusiness'},
-             {n:'Fast Company',   u:'https://www.fastcompany.com/latest/rss'}],
-  economy:  [{n:'Reuters',        u:'https://feeds.reuters.com/reuters/businessNews'},
-             {n:'AP Business',    u:'https://rsshub.app/apnews/topics/business'}],
-  culture:  [{n:'The Guardian',   u:'https://www.theguardian.com/culture/rss'},
-             {n:'NPR Culture',    u:'https://feeds.npr.org/1008/rss.xml'}],
-  health:   [{n:'Medical News',   u:'https://www.medicalnewstoday.com/rss'},
-             {n:'WebMD',          u:'https://rssfeeds.webmd.com/rss/rss.aspx?RSSSource=RSS_PUBLIC'}],
-  education:[{n:'EdSurge',        u:'https://www.edsurge.com/news.rss'},
-             {n:'Inside Higher Ed',u:'https://www.insidehighered.com/rss.xml'}],
-  history:  [{n:'Smithsonian',    u:'https://www.smithsonianmag.com/rss/history-archaeology/'},
-             {n:'History.com',    u:'https://www.history.com/.rss/full/'}],
-  travel:   [{n:'Lonely Planet',  u:'https://www.lonelyplanet.com/news/feed'},
-             {n:'Travel+Leisure', u:'https://www.travelandleisure.com/rss/travel-tips'}],
-  sports:   [{n:'ESPN',           u:'https://www.espn.com/espn/rss/news'},
-             {n:'BBC Sport',      u:'https://feeds.bbci.co.uk/sport/rss.xml'}],
-  media:    [{n:'Variety',        u:'https://variety.com/feed/'},
-             {n:'IndieWire',      u:'https://www.indiewire.com/feed/'}],
-  language: [{n:'Babbel',         u:'https://www.babbel.com/en/magazine/feed'},
-             {n:'Fluent in 3M',   u:'https://www.fluentin3months.com/feed/'}],
-  ai:       [{n:'MIT Tech Review',u:'https://www.technologyreview.com/feed/'},
-             {n:'AI News',        u:'https://artificialintelligence-news.com/feed/'}],
-  law:      [{n:'ABA Journal',    u:'https://www.abajournal.com/news/rss'},
-             {n:'SCOTUSblog',     u:'https://www.scotusblog.com/feed/'}],
+/* profession → recommended category boosts */
+const PROF_MAP={
+  'project manager':['career','tech','economy','ai'],
+  'hr':['career','law','education','economy'],
+  'human resources':['career','law','education','economy'],
+  'lawyer':['law','economy','career','culture'],
+  'attorney':['law','economy','career'],
+  'finance':['finance','economy','law','tech'],
+  'accountant':['finance','economy','law'],
+  'doctor':['health','science','law'],
+  'nurse':['health','science','education'],
+  'teacher':['education','culture','language','history'],
+  'professor':['education','science','history','culture'],
+  'engineer':['tech','science','ai','economy'],
+  'developer':['tech','ai','science','career'],
+  'marketing':['culture','media','tech','economy'],
+  'entrepreneur':['tech','finance','economy','ai','career'],
+  'startup':['tech','finance','economy','ai'],
+  'executive':['career','economy','finance','ai','law'],
+  'student':['education','science','history','culture'],
 };
 
-/* ─── STATE ─── */
-let profile=null,articles=[],bookmarks=JSON.parse(localStorage.getItem('nycu_bm')||'[]'),currentFilter='all',isLoading=false;
+/* ═══════════════════════════════════════════
+   RSS SOURCES
+═══════════════════════════════════════════ */
+const RSS='https://api.rss2json.com/v1/api.json?rss_url=';
+const SRCS={
+  tech:     [{n:'TechCrunch',    u:'https://techcrunch.com/feed/'},
+             {n:'The Verge',     u:'https://www.theverge.com/rss/index.xml'}],
+  finance:  [{n:'Investopedia',  u:'https://www.investopedia.com/feedbuilder/feed/getfeed/?feedName=rss_headline'},
+             {n:'MarketWatch',   u:'https://feeds.marketwatch.com/marketwatch/topstories/'}],
+  science:  [{n:'Science Daily', u:'https://www.sciencedaily.com/rss/all.xml'},
+             {n:'New Scientist', u:'https://www.newscientist.com/feed/home/'}],
+  career:   [{n:'HBR',          u:'https://feeds.hbr.org/harvardbusiness'},
+             {n:'Fast Company',  u:'https://www.fastcompany.com/latest/rss'}],
+  economy:  [{n:'Reuters',       u:'https://feeds.reuters.com/reuters/businessNews'},
+             {n:'AP Business',   u:'https://rsshub.app/apnews/topics/business'}],
+  culture:  [{n:'The Guardian',  u:'https://www.theguardian.com/culture/rss'},
+             {n:'NPR Culture',   u:'https://feeds.npr.org/1008/rss.xml'}],
+  health:   [{n:'Medical News',  u:'https://www.medicalnewstoday.com/rss'},
+             {n:'WebMD',         u:'https://rssfeeds.webmd.com/rss/rss.aspx?RSSSource=RSS_PUBLIC'}],
+  education:[{n:'EdSurge',       u:'https://www.edsurge.com/news.rss'},
+             {n:'Inside Higher Ed',u:'https://www.insidehighered.com/rss.xml'}],
+  history:  [{n:'Smithsonian',   u:'https://www.smithsonianmag.com/rss/history-archaeology/'},
+             {n:'History.com',   u:'https://www.history.com/.rss/full/'}],
+  travel:   [{n:'Lonely Planet', u:'https://www.lonelyplanet.com/news/feed'},
+             {n:'Travel+Leisure',u:'https://www.travelandleisure.com/rss/travel-tips'}],
+  sports:   [{n:'ESPN',          u:'https://www.espn.com/espn/rss/news'},
+             {n:'BBC Sport',     u:'https://feeds.bbci.co.uk/sport/rss.xml'}],
+  media:    [{n:'Variety',       u:'https://variety.com/feed/'},
+             {n:'IndieWire',     u:'https://www.indiewire.com/feed/'}],
+  language: [{n:'Babbel',        u:'https://www.babbel.com/en/magazine/feed'},
+             {n:'Fluent in 3M',  u:'https://www.fluentin3months.com/feed/'}],
+  ai:       [{n:'MIT Tech Review',u:'https://www.technologyreview.com/feed/'},
+             {n:'AI News',       u:'https://artificialintelligence-news.com/feed/'}],
+  law:      [{n:'ABA Journal',   u:'https://www.abajournal.com/news/rss'},
+             {n:'SCOTUSblog',    u:'https://www.scotusblog.com/feed/'}],
+};
 
-/* ─── INIT ─── */
-window.addEventListener('DOMContentLoaded',()=>{
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let profiles   = JSON.parse(ls('nycu_profiles') || '[]');
+let activeIdx  = parseInt(ls('nycu_active_profile') || '0');
+let bookmarks  = JSON.parse(ls('nycu_bm') || '[]');
+let notes      = JSON.parse(ls('nycu_notes') || '{}');
+let readCounts = JSON.parse(ls('nycu_reads') || '{}');
+let digestSub  = JSON.parse(ls('nycu_digest') || 'null');
+let articles   = [];
+let currentCat = 'all';
+let isLoading  = false;
+let currentUser= JSON.parse(ls('nycu_user') || 'null');
+
+function profile(){ return profiles[activeIdx] || null; }
+function ls(k){ return localStorage.getItem(k); }
+function lsSet(k,v){ localStorage.setItem(k,v); }
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', ()=>{
   buildCatGrid();
-  const s=localStorage.getItem('nycu_profile');
-  if(s){profile=JSON.parse(s);document.getElementById('onboardingModal').classList.add('hidden');initFeed();}
+  updateAuthArea();
+  if(!profiles.length){
+    openModal('onboardModal');
+  } else {
+    boot();
+  }
 });
 
-/* ─── ONBOARDING ─── */
+function boot(){
+  updateModeSwitcher();
+  renderSidebarTopics();
+  updateFeedHeader();
+  renderRailProfile();
+  updateBmCount();
+  renderHeatmap();
+  renderProfilesPage();
+  loadArticles('all');
+}
+
+/* ═══════════════════════════════════════════
+   AUTH (localStorage simulation — in production replace with real backend)
+═══════════════════════════════════════════ */
+function authTab(t){
+  document.querySelectorAll('.modal-tab').forEach((b,i)=>b.classList.toggle('active',i===(t==='signin'?0:1)));
+  document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+  document.getElementById('form-'+t).classList.add('active');
+}
+function doSignIn(){
+  const email=document.getElementById('si-email').value.trim();
+  const pass=document.getElementById('si-pass').value;
+  if(!email||!pass){showToast('Please fill in all fields');return;}
+  const users=JSON.parse(ls('nycu_users')||'[]');
+  const u=users.find(u=>u.email===email&&u.pass===btoa(pass));
+  if(!u){showToast('No account found — create one first');return;}
+  currentUser={email:u.email,name:u.name};
+  lsSet('nycu_user',JSON.stringify(currentUser));
+  // load their profiles if stored
+  if(u.profiles)profiles=u.profiles, lsSet('nycu_profiles',JSON.stringify(profiles));
+  updateAuthArea();
+  closeModal('authModal');
+  showToast(`Welcome back, ${u.name}!`);
+  if(!profiles.length) openModal('onboardModal'); else boot();
+}
+function doSignUp(){
+  const first=document.getElementById('su-first').value.trim();
+  const last=document.getElementById('su-last').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pass=document.getElementById('su-pass').value;
+  if(!first||!email||!pass){showToast('Please fill in all fields');return;}
+  if(pass.length<6){showToast('Password must be 6+ characters');return;}
+  const users=JSON.parse(ls('nycu_users')||'[]');
+  if(users.find(u=>u.email===email)){showToast('Account already exists — sign in');return;}
+  const u={name:first+' '+(last||''),email,pass:btoa(pass),profiles:[]};
+  users.push(u); lsSet('nycu_users',JSON.stringify(users));
+  currentUser={email,name:u.name}; lsSet('nycu_user',JSON.stringify(currentUser));
+  updateAuthArea();
+  closeModal('authModal');
+  showToast(`Account created! Let's set up your feed.`);
+  openModal('onboardModal');
+}
+function signOut(){
+  currentUser=null; lsSet('nycu_user','null');
+  updateAuthArea(); showToast('Signed out');
+}
+function updateAuthArea(){
+  const a=document.getElementById('authArea');
+  if(currentUser){
+    const init=currentUser.name.charAt(0).toUpperCase();
+    a.innerHTML=`<div class="user-avatar" title="${x(currentUser.name)}" onclick="toggleUserMenu()">${init}</div>`;
+  } else {
+    a.innerHTML=`<button class="btn btn-outline btn-sm" onclick="openModal('authModal')">Sign In</button>`;
+  }
+}
+function toggleUserMenu(){
+  showToast(`Signed in as ${currentUser.name} · Click to sign out`);
+  setTimeout(()=>{ if(confirm('Sign out?')) signOut(); },400);
+}
+function syncUserProfiles(){
+  if(!currentUser) return;
+  const users=JSON.parse(ls('nycu_users')||'[]');
+  const i=users.findIndex(u=>u.email===currentUser.email);
+  if(i>-1){users[i].profiles=profiles; lsSet('nycu_users',JSON.stringify(users));}
+}
+
+/* ═══════════════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════════════ */
 function buildCatGrid(){
-  document.getElementById('catGrid').innerHTML=ALL_CATS.map(c=>
-    `<div class="cat-chip" data-id="${c.id}" onclick="toggleCat(this)"><span class="ci">${c.icon}</span>${c.label}</div>`
+  document.getElementById('obCatGrid').innerHTML=CATS.map(c=>
+    `<div class="cat-chip" data-id="${c.id}" onclick="toggleCat(this)"><span class="ci">${c.icon}</span><span class="cl">${c.label}</span></div>`
   ).join('');
 }
-function toggleCat(el){el.classList.toggle('selected');}
-function goStep(n){
+function toggleCat(el){el.classList.toggle('sel');}
+function selDepth(el){document.querySelectorAll('.depth-card').forEach(d=>d.classList.remove('sel'));el.classList.add('sel');}
+
+function obStep(n){
   if(n===2){
-    if(!document.getElementById('userName').value.trim()||!document.getElementById('userRole').value.trim())
-      {showToast('Please fill in name and role 👆');return;}
+    if(!document.getElementById('ob-name').value.trim()||!document.getElementById('ob-role').value.trim()){showToast('Name and role are required');return;}
   }
-  if(n===3&&document.querySelectorAll('#catGrid .cat-chip.selected').length<2)
-    {showToast('Pick at least 2 topics 👆');return;}
-  document.querySelectorAll('.modal-step').forEach(s=>s.classList.remove('active'));
-  document.getElementById('step'+n).classList.add('active');
+  if(n===3){
+    if(document.querySelectorAll('#obCatGrid .cat-chip.sel').length<2){showToast('Pick at least 2 topics');return;}
+  }
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob'+n).classList.add('active');
+  // update done dots
+  document.querySelectorAll('.step-indicators .step-dot').forEach((d,i)=>{
+    d.classList.remove('active','done');
+    if(i===n-1) d.classList.add('active');
+    else if(i<n-1) d.classList.add('done');
+  });
 }
+
 function saveProfile(){
-  profile={
-    name:document.getElementById('userName').value.trim(),
-    role:document.getElementById('userRole').value.trim(),
-    type:document.getElementById('userType').value,
-    cats:[...document.querySelectorAll('#catGrid .cat-chip.selected')].map(e=>e.dataset.id),
-    depth:document.querySelector('input[name="depth"]:checked')?.value||'standard',
+  const cats=[...document.querySelectorAll('#obCatGrid .cat-chip.sel')].map(e=>e.dataset.id);
+  const depth=document.querySelector('.depth-card.sel')?.dataset.depth||'standard';
+  const prof={
+    name:document.getElementById('ob-name').value.trim(),
+    role:document.getElementById('ob-role').value.trim(),
+    industry:document.getElementById('ob-industry').value,
+    modeName:document.getElementById('ob-modename').value.trim()||'Work',
+    cats, depth,
     created:Date.now()
   };
-  localStorage.setItem('nycu_profile',JSON.stringify(profile));
-  document.getElementById('onboardingModal').classList.add('hidden');
-  initFeed();
-}
-function openOnboarding(){
-  if(profile){
-    document.getElementById('userName').value=profile.name||'';
-    document.getElementById('userRole').value=profile.role||'';
-    document.getElementById('userType').value=profile.type||'';
-    document.querySelectorAll('#catGrid .cat-chip').forEach(el=>el.classList.toggle('selected',profile.cats.includes(el.dataset.id)));
-  }
-  document.getElementById('onboardingModal').classList.remove('hidden');
-  goStep(1);
+  // editing existing or creating new?
+  const editing=parseInt(document.getElementById('onboardModal').dataset.editIdx??'-1');
+  if(editing>=0){ profiles[editing]=prof; }
+  else{ profiles.push(prof); activeIdx=profiles.length-1; }
+  lsSet('nycu_profiles',JSON.stringify(profiles));
+  lsSet('nycu_active_profile',String(activeIdx));
+  syncUserProfiles();
+  closeModal('onboardModal');
+  boot();
+  showToast(`Profile "${prof.modeName}" saved ✦`);
 }
 
-/* ─── FEED INIT ─── */
-function initFeed(){renderProfileCard();renderSidebarCats();updateHeader();loadArticles('all');}
-function updateHeader(){
-  if(!profile)return;
-  const h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('feedTitle').textContent=`${g}, ${profile.name}`;
-  document.getElementById('feedSubtitle').textContent=`Curated for ${profile.role} · ${profile.cats.length} topics · Live news`;
+/* ═══════════════════════════════════════════
+   PROFESSION FILTERING
+═══════════════════════════════════════════ */
+function getProfessionBoosts(){
+  const p=profile();
+  if(!p) return [];
+  const role=(p.role||'').toLowerCase();
+  for(const [key,cats] of Object.entries(PROF_MAP)){
+    if(role.includes(key)) return cats;
+  }
+  // industry fallback
+  const ind=(p.industry||'').toLowerCase();
+  if(ind.includes('hr')||ind.includes('human')) return PROF_MAP['hr'];
+  if(ind.includes('tech')||ind.includes('engineer')) return PROF_MAP['engineer'];
+  if(ind.includes('law')) return PROF_MAP['lawyer'];
+  if(ind.includes('finance')) return PROF_MAP['finance'];
+  if(ind.includes('health')||ind.includes('medical')) return PROF_MAP['doctor'];
+  return [];
 }
-function renderProfileCard(){
-  if(!profile)return;
-  document.getElementById('profileCard').innerHTML=`<div class="profile-card">
-    <h4>${x(profile.name)}</h4><p>${x(profile.role)}</p>
-    <div class="profile-cats">${profile.cats.slice(0,5).map(id=>{const c=getCat(id);return`<span class="mini-tag">${c.icon} ${c.label}</span>`;}).join('')}</div>
+
+function getProfessionLabel(){
+  const p=profile(); if(!p) return '';
+  const role=p.role.toLowerCase();
+  for(const [key] of Object.entries(PROF_MAP)){
+    if(role.includes(key)) return `Showing content boosted for ${p.role}`;
+  }
+  return p.industry ? `Content tailored for ${p.industry}` : '';
+}
+
+/* ═══════════════════════════════════════════
+   FEED HEADER & SIDEBAR
+═══════════════════════════════════════════ */
+function updateFeedHeader(){
+  const p=profile(); if(!p) return;
+  const h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('feedTitle').textContent=`${g}, ${p.name}`;
+  document.getElementById('feedSubtitle').textContent=
+    `${p.modeName} feed · ${p.cats.length} topics · Live news`;
+  const banner=document.getElementById('roleBanner');
+  const lbl=getProfessionLabel();
+  if(lbl){
+    document.getElementById('roleBannerText').innerHTML=`<strong>Profession Filter On:</strong> ${lbl}`;
+    banner.classList.remove('hidden');
+  } else { banner.classList.add('hidden'); }
+}
+function renderSidebarTopics(){
+  const p=profile(); if(!p) return;
+  document.getElementById('sidebarTopics').innerHTML=
+    p.cats.map(id=>{const c=getCat(id);
+      return`<div class="sb-link" data-cat="${id}" onclick="filterCat('${id}',this)"><span class="ic">${c.icon}</span>${c.label}</div>`;
+    }).join('');
+}
+function renderRailProfile(){
+  const p=profile(); if(!p) return;
+  const tags=p.cats.slice(0,5).map(id=>{const c=getCat(id);return`<span class="mini-tag">${c.icon} ${c.label}</span>`;}).join('');
+  document.getElementById('railProfile').innerHTML=`<div class="rail-card">
+    <div class="rail-name">${x(p.name)}</div>
+    <div class="rail-role">${x(p.role)} · ${x(p.modeName)}</div>
+    <div class="rail-tags">${tags}</div>
   </div>`;
 }
-function renderSidebarCats(){
-  if(!profile)return;
-  document.getElementById('sidebarCats').innerHTML=profile.cats.map(id=>{
-    const c=getCat(id);
-    return`<div class="sidebar-link" onclick="filterCat('${c.id}',this)"><span class="ic">${c.icon}</span>${c.label}</div>`;
-  }).join('');
+function updateModeSwitcher(){
+  const sw=document.getElementById('modeSwitcher');
+  if(!profiles.length){sw.innerHTML='';return;}
+  sw.innerHTML=profiles.map((p,i)=>
+    `<button class="mode-btn${i===activeIdx?' active':''}" onclick="switchMode(${i})">${x(p.modeName)}</button>`
+  ).join('');
+}
+function switchMode(i){
+  activeIdx=i; lsSet('nycu_active_profile',String(i));
+  updateModeSwitcher(); updateFeedHeader(); renderSidebarTopics(); renderRailProfile(); renderProfilesPage();
+  // reset cat filter
+  currentCat='all';
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('sb-all')?.classList.add('active');
+  loadArticles('all');
+  showToast(`Switched to "${profiles[i].modeName}" mode`);
 }
 
-/* ─── RSS LOADING ─── */
+/* ═══════════════════════════════════════════
+   RSS LOADING
+═══════════════════════════════════════════ */
 async function fetchFeed(url,name,catId){
   try{
     const r=await fetch(RSS+encodeURIComponent(url)+'&count=8',{signal:AbortSignal.timeout(9000)});
@@ -434,7 +980,7 @@ async function fetchFeed(url,name,catId){
     const d=await r.json();
     if(d.status!=='ok'||!d.items?.length)return[];
     return d.items.slice(0,6).map(it=>({
-      id:btoa((it.link||it.title||'').slice(0,60)).replace(/[^a-zA-Z0-9]/g,'').slice(0,14)||Math.random().toString(36).slice(2),
+      id:btoa((it.link||it.title||'').slice(0,60)).replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||Math.random().toString(36).slice(2),
       title:strip(it.title||'Untitled'),
       summary:strip(it.description||it.content||'').replace(/\s+/g,' ').slice(0,230).trim()+'…',
       body:strip(it.content||it.description||''),
@@ -442,204 +988,452 @@ async function fetchFeed(url,name,catId){
       link:it.link||'',
       date:it.pubDate?new Date(it.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'',
       readTime:Math.max(1,Math.round(strip(it.content||it.description||'').split(/\s+/).length/220)),
-      featured:false
+      featured:false,
+      profBoost:false,
     }));
-  }catch(e){console.warn('RSS fail:',name,e.message);return[];}
+  }catch(e){console.warn('RSS:',name,e.message);return[];}
 }
 
 async function loadArticles(filter){
   if(isLoading)return;
-  isLoading=true;currentFilter=filter;
+  isLoading=true;currentCat=filter;
   showSkeleton();
+  const p=profile();
+  const boosts=getProfessionBoosts();
   let results=[],used=new Set();
   try{
-    const cats=filter==='all'?(profile?.cats||['tech','science','career']).slice(0,7):[filter];
+    const cats=filter==='all'
+      ?(p?.cats||['tech','science','career']).slice(0,7)
+      :[filter];
     const promises=cats.flatMap(catId=>{
-      const srcs=(SOURCES[catId]||[]).slice(0,filter==='all'?1:2);
+      const srcs=(SRCS[catId]||[]).slice(0,filter==='all'?1:2);
       return srcs.map(s=>{used.add(s.n);return fetchFeed(s.u,s.n,catId);});
     });
     const settled=await Promise.allSettled(promises);
     settled.forEach(r=>{if(r.status==='fulfilled')results.push(...r.value);});
-    if(!results.length){results=fallback(filter);used.add('Curated fallback');}
-    results=shuffle(results);
-    if(results.length)results[0].featured=true;
+    if(!results.length){results=fallback(filter,p);used.add('Curated');}
+    // Tag profession-boosted articles
+    if(boosts.length){
+      results=results.map(a=>({...a,profBoost:boosts.includes(a.category)}));
+      // Sort: boosted first
+      results.sort((a,b)=>(b.profBoost?1:0)-(a.profBoost?1:0));
+    } else {
+      results=shuffle(results);
+    }
+    if(results.length) results[0].featured=true;
     articles=results;
-    document.getElementById('sourceLabel').textContent=`${used.size} source${used.size!==1?'s':''}`;
-    document.getElementById('feedCount').textContent=`${results.length} article${results.length!==1?'s':''}`;
-    renderFeed(articles);renderTrending(articles);
+    document.getElementById('srcChip').textContent=`${used.size} sources`;
+    document.getElementById('countChip').textContent=`${results.length} articles`;
+    renderFeed(articles);
+    renderTrending(articles);
+    renderHeatmap();
   }catch(e){
     console.error(e);
-    const fb=fallback(filter);if(fb.length)fb[0].featured=true;
-    articles=fb;document.getElementById('sourceLabel').textContent='Fallback';
+    const fb=fallback(filter,p);if(fb.length)fb[0].featured=true;
+    articles=fb;
+    document.getElementById('srcChip').textContent='Fallback';
     renderFeed(fb);renderTrending(fb);
   }finally{isLoading=false;}
 }
 
-/* ─── RENDER ─── */
+/* ═══════════════════════════════════════════
+   RENDER FEED
+═══════════════════════════════════════════ */
 function renderFeed(arts){
   const feat=arts.find(a=>a.featured),rest=arts.filter(a=>!a.featured);
   const fa=document.getElementById('featuredArea');
   if(feat){
     const c=getCat(feat.category);
-    fa.innerHTML=`<div class="featured-card" onclick="openDetail('${feat.id}')">
-      <div class="feat-badge">${c.icon} ${c.label} · Top Story</div>
+    fa.innerHTML=`<div class="featured" onclick="openDrawer('${feat.id}')">
+      <div class="feat-eyebrow">
+        <div class="feat-dot"></div>
+        <span class="t-label">${c.icon} ${c.label}${feat.profBoost?' · Recommended for your role':' · Top Story'}</span>
+      </div>
       <h2>${x(feat.title)}</h2>
-      <p class="feat-summary">${x(feat.summary)}</p>
-      <div class="feat-meta">
+      <p class="summary">${x(feat.summary)}</p>
+      <div class="feat-footer">
         <span class="feat-source">${x(feat.source)}</span>
         <span>⏱ ${feat.readTime} min</span>
         <span>${feat.date}</span>
-        <button class="read-more">Read article →</button>
+        <button class="feat-action">Read article →</button>
       </div>
     </div>`;
-  }else fa.innerHTML='';
+  } else fa.innerHTML='';
   const aa=document.getElementById('articlesArea');
-  if(!rest.length){aa.innerHTML=`<div class="empty"><div class="ei">📭</div><h3>No articles found</h3><p>Try refreshing or pick another category.</p></div>`;return;}
-  aa.innerHTML=`<div class="section-title">Latest Articles</div><div class="article-grid">${rest.map((a,i)=>card(a,i)).join('')}</div>`;
+  if(!rest.length){aa.innerHTML=`<div class="empty"><span class="empty-icon">📭</span><h3>No articles found</h3><p>Try refreshing or selecting another topic.</p></div>`;return;}
+
+  // Group: profession-boosted first if any
+  const boosted=rest.filter(a=>a.profBoost);
+  const regular=rest.filter(a=>!a.profBoost);
+  let html='';
+  if(boosted.length){
+    const p=profile();
+    html+=`<div class="section-head"><h3>Recommended for ${x(p?.role||'You')}</h3></div>
+      <div class="grid">${boosted.map((a,i)=>cardHTML(a,i)).join('')}</div>`;
+  }
+  if(regular.length){
+    html+=`<div class="section-head"><h3>Latest Articles</h3></div>
+      <div class="grid">${regular.map((a,i)=>cardHTML(a,i)).join('')}</div>`;
+  }
+  aa.innerHTML=html;
 }
 
-function card(a,i){
-  const c=getCat(a.category),saved=bookmarks.some(b=>b.id===a.id);
-  return`<div class="article-card" style="animation-delay:${i*.04}s" onclick="openDetail('${a.id}')">
+function cardHTML(a,i){
+  const c=getCat(a.category),saved=bookmarks.some(b=>b.id===a.id),hasNote=!!notes[a.id];
+  const noteEl=hasNote?`<div class="card-note-indicator">📝 Note saved</div>`:'';
+  return`<div class="card" style="animation-delay:${i*.04}s" onclick="openDrawer('${a.id}')">
     <div class="card-top">
-      <span class="cat-tag ${c.tag}">${c.icon} ${c.label}</span>
-      <button class="bm-btn${saved?' saved':''}" onclick="event.stopPropagation();toggleBM('${a.id}')" title="Save">🔖</button>
+      <span class="tag ${c.tg}">${c.icon} ${c.label}${a.profBoost?' ★':''}</span>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="icon-btn${hasNote?' active':''}" onclick="openNote('${a.id}')" title="Add note">📝</button>
+        <button class="icon-btn${saved?' active':''}" onclick="toggleBM('${a.id}')" title="Save">🔖</button>
+      </div>
     </div>
     <h3>${x(a.title)}</h3>
-    <p class="card-summary">${x(a.summary)}</p>
-    <div class="card-footer"><span><strong>${x(a.source)}</strong></span><span>⏱ ${a.readTime} min</span></div>
+    <p class="summary">${x(a.summary)}</p>
+    ${noteEl}
+    <div class="card-foot"><span><strong>${x(a.source)}</strong></span><span>⏱ ${a.readTime} min</span></div>
   </div>`;
 }
 
 function renderTrending(arts){
-  document.getElementById('trendingArea').innerHTML=arts.slice(0,6).map((a,i)=>{
+  document.getElementById('trendingArea').innerHTML=arts.slice(0,7).map((a,i)=>{
     const c=getCat(a.category);
-    return`<div class="trending-item" onclick="openDetail('${a.id}')">
-      <div class="trending-num">#${i+1} ${c.icon} ${c.label}</div>
-      <h4>${x(a.title)}</h4>
-      <div class="tm">${x(a.source)} · ${a.readTime} min</div>
+    return`<div class="trending-item" onclick="openDrawer('${a.id}')">
+      <div class="ti-num">#${i+1} ${c.icon} ${c.label}</div>
+      <div class="ti-title">${x(a.title)}</div>
+      <div class="ti-sub">${x(a.source)} · ${a.readTime} min</div>
     </div>`;
   }).join('');
 }
 
 function showSkeleton(){
-  document.getElementById('featuredArea').innerHTML=`<div class="skeleton" style="height:130px;margin-bottom:1.6rem;border-radius:16px"></div>`;
-  document.getElementById('articlesArea').innerHTML=`<div class="section-title">Fetching articles…</div>
-    <div class="skel-grid">${Array(6).fill(0).map(()=>`<div class="skeleton">
-      <div class="skel-line s"></div><div class="skel-line t"></div>
-      <div class="skel-line"></div><div class="skel-line"></div><div class="skel-line s"></div>
-    </div>`).join('')}</div>`;
-  document.getElementById('sourceLabel').textContent='Fetching…';
-  document.getElementById('feedCount').textContent='';
+  document.getElementById('featuredArea').innerHTML=`<div class="skel" style="height:130px;margin-bottom:1.75rem;border-radius:12px"></div>`;
+  document.getElementById('articlesArea').innerHTML=`<div class="section-head"><h3>Loading…</h3></div>
+    <div class="grid">${Array(6).fill(0).map(()=>`<div class="skel"><div class="sl s"></div><div class="sl t"></div><div class="sl"></div><div class="sl"></div><div class="sl s"></div></div>`).join('')}</div>`;
+  document.getElementById('srcChip').textContent='—';
+  document.getElementById('countChip').textContent='—';
 }
 
-/* ─── DETAIL ─── */
-function openDetail(id){
+/* ═══════════════════════════════════════════
+   DETAIL DRAWER
+═══════════════════════════════════════════ */
+function openDrawer(id){
   const a=articles.find(a=>a.id===id)||bookmarks.find(a=>a.id===id);if(!a)return;
+  // track reads for heatmap
+  readCounts[a.category]=(readCounts[a.category]||0)+1;
+  lsSet('nycu_reads',JSON.stringify(readCounts));
+  renderHeatmap();
   const c=getCat(a.category),saved=bookmarks.some(b=>b.id===a.id);
+  const note=notes[a.id]||'';
   const body=(a.body||a.summary).split(/\n\n+/).filter(Boolean).slice(0,8).map(p=>`<p>${x(p)}</p>`).join('');
-  document.getElementById('detailContent').innerHTML=`
-    <div style="margin-bottom:.6rem"><span class="cat-tag ${c.tag}">${c.icon} ${c.label}</span></div>
-    <h2 class="detail-title">${x(a.title)}</h2>
-    <div class="detail-meta">
+  document.getElementById('drawerContent').innerHTML=`
+    <div style="margin-bottom:.6rem"><span class="tag ${c.tg}">${c.icon} ${c.label}</span></div>
+    <h2>${x(a.title)}</h2>
+    <div class="drawer-meta">
       <span><strong>${x(a.source)}</strong></span>
       <span>⏱ ${a.readTime} min</span>
       <span>${a.date}</span>
       ${a.link?`<a href="${x(a.link)}" target="_blank" rel="noopener">↗ Original</a>`:''}
     </div>
-    <div class="ai-box"><div class="ai-label">✦ Summary</div><p>${x(a.summary)}</p></div>
-    <div class="detail-body">${body||`<p>${x(a.summary)}</p>`}</div>
-    <div class="detail-actions">
-      <button class="btn btn-primary" id="detBm" onclick="toggleBM('${a.id}');document.getElementById('detBm').textContent=bookmarks.some(b=>b.id==='${a.id}')?'🔖 Saved':'🔖 Save'">
+    <div class="insight-box"><div class="insight-label">✦ Summary</div><p>${x(a.summary)}</p></div>
+    <div class="drawer-body">${body||`<p>${x(a.summary)}</p>`}</div>
+    <div class="note-section">
+      <h4>My Note</h4>
+      <div class="note-saved${note?' has-note':''}" id="noteSaved">${x(note)}</div>
+      <button class="btn btn-outline btn-sm" onclick="openNote('${a.id}','drawer')">${note?'Edit Note':'+ Add Note'}</button>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn btn-gold btn-sm" id="drawerBm" onclick="toggleBM('${a.id}');document.getElementById('drawerBm').textContent=bookmarks.some(b=>b.id==='${a.id}')?'🔖 Saved':'🔖 Save'">
         ${saved?'🔖 Saved':'🔖 Save'}
       </button>
-      ${a.link?`<a href="${x(a.link)}" target="_blank" rel="noopener" class="btn btn-ghost">↗ Full Article</a>`:''}
-      <button class="btn btn-ghost" onclick="shareIt('${x(a.title)}','${x(a.link)}')">⬡ Share</button>
+      ${a.link?`<a href="${x(a.link)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">↗ Full Article</a>`:''}
+      <button class="btn btn-ghost btn-sm" onclick="shareIt('${x(a.title)}','${x(a.link)}')">⬡ Share</button>
     </div>`;
-  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeDetail(){document.getElementById('detailPanel').classList.remove('open');document.body.style.overflow='';}
-function shareIt(title,link){
-  const u=link||location.href;
-  if(navigator.share)navigator.share({title,url:u});
-  else navigator.clipboard?.writeText(u).then(()=>showToast('Link copied!')).catch(()=>{});
+function closeDrawer(){document.getElementById('drawerOverlay').classList.remove('open');document.body.style.overflow='';}
+function shareIt(t,l){const u=l||location.href;if(navigator.share)navigator.share({title:t,url:u});else navigator.clipboard?.writeText(u).then(()=>showToast('Link copied!'));}
+
+/* ═══════════════════════════════════════════
+   NOTES
+═══════════════════════════════════════════ */
+function openNote(id,ctx){
+  const a=articles.find(a=>a.id===id)||bookmarks.find(a=>a.id===id);
+  document.getElementById('note-article-id').value=id;
+  document.getElementById('note-article-title').textContent=a?.title||'';
+  document.getElementById('note-text').value=notes[id]||'';
+  document.getElementById('noteModal').dataset.ctx=ctx||'';
+  openModal('noteModal');
+}
+function saveNote(){
+  const id=document.getElementById('note-article-id').value;
+  const txt=document.getElementById('note-text').value.trim();
+  if(txt) notes[id]=txt; else delete notes[id];
+  lsSet('nycu_notes',JSON.stringify(notes));
+  closeModal('noteModal');
+  // Update saved note display in drawer if open
+  const ns=document.getElementById('noteSaved');
+  if(ns){ns.textContent=txt;ns.classList.toggle('has-note',!!txt);}
+  // Refresh card note indicator
+  renderFeed(articles);
+  showToast(txt?'Note saved ✦':'Note removed');
 }
 
-/* ─── BOOKMARKS ─── */
+/* ═══════════════════════════════════════════
+   BOOKMARKS
+═══════════════════════════════════════════ */
 function toggleBM(id){
   const a=articles.find(a=>a.id===id)||bookmarks.find(a=>a.id===id);if(!a)return;
   const i=bookmarks.findIndex(b=>b.id===id);
   if(i>-1){bookmarks.splice(i,1);showToast('Removed from saved');}
-  else{bookmarks.unshift({...a,savedAt:Date.now()});showToast('Article saved 🔖');}
-  localStorage.setItem('nycu_bm',JSON.stringify(bookmarks));
-  document.querySelectorAll('.bm-btn').forEach(btn=>{
-    const c=btn.closest('.article-card');if(!c)return;
-    const m=c.getAttribute('onclick')?.match(/'([^']+)'/);
-    if(m&&m[1]===id)btn.classList.toggle('saved',bookmarks.some(b=>b.id===id));
-  });
+  else{bookmarks.unshift({...a,savedAt:Date.now()});showToast('Saved 🔖');}
+  lsSet('nycu_bm',JSON.stringify(bookmarks));
+  updateBmCount();
+}
+function updateBmCount(){
+  const n=bookmarks.length;
+  const el=document.getElementById('sb-bm-count');
+  if(el)el.textContent=n||'';
 }
 function renderBookmarks(){
-  const ba=document.getElementById('bookmarksArea');
-  if(!bookmarks.length){ba.innerHTML=`<div class="empty"><div class="ei">🔖</div><h3>No saved articles yet</h3><p>Bookmark articles from your feed to read later.</p></div>`;return;}
-  ba.innerHTML=`<div class="article-grid">${bookmarks.map((a,i)=>card(a,i)).join('')}</div>`;
+  const p=document.getElementById('page-bookmarks');
+  document.getElementById('bmCountLabel').textContent=`${bookmarks.length} article${bookmarks.length!==1?'s':''}`;
+  if(!bookmarks.length){document.getElementById('bmGrid').innerHTML=`<div class="empty"><span class="empty-icon">🔖</span><h3>Nothing saved yet</h3><p>Bookmark articles from your feed.</p></div>`;return;}
+  document.getElementById('bmGrid').innerHTML=`<div class="grid">${bookmarks.map((a,i)=>cardHTML(a,i)).join('')}</div>`;
 }
 
-/* ─── NAVIGATION ─── */
-function showPage(page){
-  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(page==='bookmarks'?'bookmarksPage':'feedPage').classList.add('active');
-  if(page==='bookmarks')renderBookmarks();
+/* ═══════════════════════════════════════════
+   HEATMAP
+═══════════════════════════════════════════ */
+function renderHeatmap(){
+  const p=profile();
+  const card=document.getElementById('heatmapCard');
+  const grid=document.getElementById('heatmapGrid');
+  if(!p||!Object.keys(readCounts).length){card.style.display='none';return;}
+  card.style.display='block';
+  const max=Math.max(1,...Object.values(readCounts));
+  const cats=(p.cats||[]).slice(0,9);
+  grid.innerHTML=cats.map(id=>{
+    const c=getCat(id),n=readCounts[id]||0;
+    const lvl=n===0?0:n<max*.25?1:n<max*.5?2:n<max*.75?3:4;
+    return`<div class="hm-cell hm-${lvl}" onclick="filterCat('${id}',null)" title="${c.label}: ${n} reads">
+      <span class="hm-icon">${c.icon}</span>
+      <div class="hm-label">${c.label.slice(0,7)}</div>
+      <div class="hm-count" style="color:${lvl>1?'var(--gold)':'var(--fg3)'}">${n}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   PROFILES PAGE
+═══════════════════════════════════════════ */
+function renderProfilesPage(){
+  const g=document.getElementById('profilesGrid');
+  g.innerHTML=profiles.map((p,i)=>`
+    <div class="profile-card-item${i===activeIdx?' current':''}" onclick="switchMode(${i})">
+      ${i===activeIdx?'<div class="pc-badge">Active</div>':''}
+      <div class="pc-icon">👤</div>
+      <h3>${x(p.name)}</h3>
+      <p>${x(p.modeName)} · ${x(p.role)}</p>
+      <p style="margin-top:.3rem;font-size:11px;color:var(--fg3)">${p.cats.length} topics · ${p.depth}</p>
+      <div style="display:flex;gap:6px;margin-top:.75rem">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();editProfile(${i})">Edit</button>
+        ${profiles.length>1?`<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();deleteProfile(${i})">Delete</button>`:''}
+      </div>
+    </div>
+  `).join('')+`
+    <div class="profile-card-item add-profile" onclick="newProfile()">
+      <div class="ap-icon">＋</div>
+      <span>Add Profile</span>
+      <span style="font-size:11px;color:var(--fg3)">Work, Weekend, Study…</span>
+    </div>`;
+}
+function newProfile(){
+  document.getElementById('onboardModal').dataset.editIdx='-1';
+  document.getElementById('ob-name').value='';
+  document.getElementById('ob-role').value='';
+  document.getElementById('ob-industry').value='';
+  document.getElementById('ob-modename').value='';
+  document.querySelectorAll('#obCatGrid .cat-chip').forEach(e=>e.classList.remove('sel'));
+  document.querySelectorAll('.depth-card').forEach((d,i)=>{d.classList.toggle('sel',i===1);});
+  document.getElementById('ob-modal-title').textContent='New Profile';
+  openModal('onboardModal');obStep(1);
+}
+function editProfile(i){
+  const p=profiles[i];
+  document.getElementById('onboardModal').dataset.editIdx=i;
+  document.getElementById('ob-name').value=p.name||'';
+  document.getElementById('ob-role').value=p.role||'';
+  document.getElementById('ob-industry').value=p.industry||'';
+  document.getElementById('ob-modename').value=p.modeName||'';
+  document.querySelectorAll('#obCatGrid .cat-chip').forEach(e=>e.classList.toggle('sel',p.cats.includes(e.dataset.id)));
+  document.querySelectorAll('.depth-card').forEach(d=>d.classList.toggle('sel',d.dataset.depth===p.depth));
+  document.getElementById('ob-modal-title').textContent='Edit Profile';
+  openModal('onboardModal');obStep(1);
+}
+function deleteProfile(i){
+  if(!confirm(`Delete "${profiles[i].modeName}" profile?`))return;
+  profiles.splice(i,1);
+  if(activeIdx>=profiles.length)activeIdx=0;
+  lsSet('nycu_profiles',JSON.stringify(profiles));
+  lsSet('nycu_active_profile',String(activeIdx));
+  syncUserProfiles();
+  updateModeSwitcher();renderProfilesPage();renderSidebarTopics();renderRailProfile();
+  showToast('Profile deleted');
+}
+
+/* ═══════════════════════════════════════════
+   EMAIL DIGEST
+═══════════════════════════════════════════ */
+function renderDigestCats(){
+  const p=profile();if(!p)return;
+  document.getElementById('digestCats').innerHTML=p.cats.map(id=>{
+    const c=getCat(id),isOn=!digestSub||digestSub.cats?.includes(id);
+    return`<button class="freq-btn${isOn?' active':''}" data-cat="${id}" onclick="this.classList.toggle('active')">${c.icon} ${c.label}</button>`;
+  }).join('');
+}
+function selFreq(el){document.querySelectorAll('.freq-btn[data-freq]').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function subscribeDigest(){
+  const email=document.getElementById('digestEmail').value.trim();
+  if(!email||!email.includes('@')){showToast('Please enter a valid email');return;}
+  const freq=document.querySelector('.freq-btn[data-freq].active')?.dataset.freq||'daily';
+  const cats=[...document.querySelectorAll('#digestCats .freq-btn.active')].map(b=>b.dataset.cat);
+  const includeNotes=document.getElementById('digestNotes').checked;
+  digestSub={email,freq,cats,includeNotes,created:Date.now()};
+  lsSet('nycu_digest',JSON.stringify(digestSub));
+  // Send to Formspree (replace YOUR_FORM_ID with your actual Formspree form ID)
+  const FORMSPREE='https://formspree.io/f/YOUR_FORM_ID';
+  fetch(FORMSPREE,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({
+      email,
+      frequency:freq,
+      categories:cats.join(', '),
+      name:profile()?.name||'',
+      role:profile()?.role||'',
+      notes:includeNotes?'Yes':'No',
+      _subject:`New Digest Subscription — ${profile()?.name||email}`,
+    })
+  }).then(r=>{
+    if(r.ok){
+      document.getElementById('digestStatus').classList.remove('hidden');
+      showToast('Subscribed! Check your inbox soon.');
+    } else { showToast('Saved locally — add Formspree ID to enable email'); }
+  }).catch(()=>{ showToast('Saved locally — add Formspree ID to enable email'); });
+}
+function previewDigest(){
+  const p=profile();if(!p){showToast('Set up a profile first');return;}
+  const top=articles.slice(0,5);
+  if(!top.length){showToast('Refresh your feed first');return;}
+  const notesList=Object.entries(notes).map(([id,n])=>{const a=articles.find(a=>a.id===id);return a?`• ${a.title}: "${n}"`:'';}).filter(Boolean);
+  const body=`Subject: Your ${p.modeName} Digest — ${new Date().toLocaleDateString()}\n\nHello ${p.name},\n\nHere are today's top articles for ${p.role}:\n\n`
+    +top.map((a,i)=>`${i+1}. ${a.title}\n   ${a.source} · ${a.readTime} min\n   ${a.summary}\n   ${a.link||'[link]'}\n`).join('\n')
+    +(notesList.length?`\n\nMy Notes:\n${notesList.join('\n')}\n`:'')
+    +`\n—\nNews You Can Use · ${window.location.origin}`;
+  const w=window.open('','_blank');
+  w.document.write(`<pre style="font-family:monospace;padding:2rem;max-width:600px;line-height:1.6">${x(body)}</pre>`);
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+function navigate(page, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-pill').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-pill').forEach(b=>{
+      if(b.getAttribute('onclick')?.includes(page)) b.classList.add('active');
+    });
+  }
+  if(page==='bookmarks') renderBookmarks();
+  if(page==='profiles') renderProfilesPage();
+  if(page==='digest') renderDigestCats();
 }
 function filterCat(cat,el){
-  currentFilter=cat;
-  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
-  if(el)el.classList.add('active');
-  showPage('feed');
-  const c=ALL_CATS.find(a=>a.id===cat);
-  if(c){document.getElementById('feedTitle').textContent=`${c.icon} ${c.label}`;document.getElementById('feedSubtitle').textContent=`Latest from ${c.label} sources`;}
-  else updateHeader();
+  currentCat=cat;
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const p=document.querySelector('.nav-pill');
+  document.querySelectorAll('.nav-pill').forEach(b=>{b.classList.toggle('active',b.getAttribute('onclick')?.includes('feed'));});
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-feed').classList.add('active');
+  const c=CATS.find(a=>a.id===cat);
+  if(c){
+    document.getElementById('feedTitle').textContent=`${c.icon} ${c.label}`;
+    document.getElementById('feedSubtitle').textContent=`Latest from ${c.label} sources`;
+    document.getElementById('roleBanner').classList.add('hidden');
+  } else { updateFeedHeader(); }
   loadArticles(cat);
 }
-function refreshFeed(){loadArticles(currentFilter);}
+function refreshFeed(){loadArticles(currentCat);}
 
-/* ─── SEARCH ─── */
+/* ═══════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════ */
 let stm;
 function handleSearch(v){
   clearTimeout(stm);stm=setTimeout(()=>{
     if(!v.trim()){renderFeed(articles);return;}
     const q=v.toLowerCase();
-    renderFeed(articles.filter(a=>a.title.toLowerCase().includes(q)||a.summary.toLowerCase().includes(q)||a.source.toLowerCase().includes(q)||(a.category||'').includes(q)));
+    renderFeed(articles.filter(a=>
+      a.title.toLowerCase().includes(q)||
+      a.summary.toLowerCase().includes(q)||
+      a.source.toLowerCase().includes(q)||
+      (a.category||'').includes(q)
+    ));
   },280);
 }
 
-/* ─── FALLBACK ARTICLES ─── */
-function fallback(filter){
+/* ═══════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════ */
+function openModal(id){document.getElementById(id).classList.remove('hidden');}
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+
+/* ═══════════════════════════════════════════
+   FALLBACK ARTICLES
+═══════════════════════════════════════════ */
+function fallback(filter,p){
   const pool=[
-    {id:'f1',title:'The Future of Remote Work: What Every Professional Needs to Know',summary:'Hybrid work has reshaped recruiting, performance management, and culture. Organizations with async-first models now report higher output and lower attrition.',body:'Hybrid work has become the dominant model, with over 60% of knowledge workers splitting time between home and office. HR leaders are redesigning policies around digital-first communication, well-being stipends, and outcome-based performance metrics.\n\nThe most competitive organizations are building "flexibility frameworks" — structured yet adaptable schedules that accommodate deep work and collaboration without mandating fixed hours.\n\nRetention data shows employees with genuine schedule flexibility are 23% less likely to leave within 12 months, reshaping how compensation packages are designed.',source:'HBR',category:'career',link:'https://hbr.org',date:'Mar 2025',readTime:4,featured:false},
-    {id:'f2',title:'AI is Rewriting What It Means to Be a Software Engineer',summary:'LLMs now write, review, and deploy production code at scale — changing not just developer workflows, but what companies expect from engineering talent.',body:'The software engineering role is evolving at unprecedented pace. With AI coding assistants integrated into every major IDE, developers spend less time on boilerplate and more on architecture and judgment.\n\nGitHub reports over 50% of new code in Copilot-enabled repos now starts from AI suggestions. Productivity gains are real, but quality control challenges are equally significant.\n\nSenior engineers are increasingly valued not for coding speed, but for their ability to review AI output, handle edge cases, and make architectural decisions LLMs cannot reliably make.',source:'MIT Technology Review',category:'tech',link:'https://technologyreview.com',date:'Mar 2025',readTime:5,featured:false},
-    {id:'f3',title:'Global Economy Slows as Rate Cuts Remain Off the Table',summary:'Central banks are holding rates higher for longer, dampening global growth projections. The IMF now expects 2.8% growth in 2025 — below earlier forecasts.',body:'The IMF revised its global growth forecast down to 2.8% for 2025, citing sustained monetary tightening across the US, EU, and UK. While headline inflation has moderated, core services prices remain sticky.\n\nEmerging markets face dual pressure: dollar strength elevates debt costs while domestic demand softens. Countries like Brazil, Turkey, and South Africa navigate particularly difficult fiscal environments.\n\nFor businesses, the message is clear: the era of cheap capital is over. CFOs are restructuring balance sheets, prioritizing cash flow, and delaying capital expenditures.',source:'The Economist',category:'economy',link:'https://economist.com',date:'Mar 2025',readTime:5,featured:false},
-    {id:'f4',title:'Breakthrough Alzheimer\'s Therapy Shows 35% Reduction in Decline',summary:'A new dual-mechanism antibody therapy targeting both amyloid plaques and tau proteins has shown remarkable results in Phase III clinical trials.',body:'Researchers at UCSF and a European consortium announced results from a 3,200-person trial showing measurable cognitive preservation in early-stage Alzheimer\'s patients.\n\nUnlike previous attempts, the compound also addresses tau protein accumulation — suggesting a dual-mechanism approach may be key to slowing the disease.\n\nRegulatory review is expected to begin later this year. The therapy, if approved, would be administered as a monthly infusion, with cost and accessibility remaining key challenges.',source:'Science Daily',category:'health',link:'https://sciencedaily.com',date:'Feb 2025',readTime:4,featured:false},
-    {id:'f5',title:'Project Managers Who Understand AI Are Getting Promoted Faster',summary:'PMI\'s latest report identifies AI integration literacy as the fastest-growing skill requirement for PM roles — and the gap between those who have it and those who don\'t is widening.',body:'The Project Management Institute\'s workforce report identifies AI literacy as the top emerging skill requirement for PM roles in 2025. Tools like Microsoft Copilot for Project, Notion AI, and ClickUp AI are in use at over 40% of enterprise organizations.\n\nBeyond tools, hiring managers seek PMs who bridge technical AI teams and business stakeholders — translating model outputs into actionable project decisions.\n\nNew micro-credentials from PMI and Coursera are emerging rapidly. The PMP exam itself is expected to include AI competency areas in its 2026 update.',source:'PMI Pulse',category:'career',link:'https://pmi.org',date:'Mar 2025',readTime:4,featured:false},
-    {id:'f6',title:'Ancient Rome\'s Infrastructure: What Modern Cities Are Learning',summary:'New archaeological analysis of Roman aqueducts and drainage systems reveals engineering principles that drought-prone cities are actively applying today.',body:'A Cambridge-Politecnico di Milano project used ground-penetrating radar and 3D modeling to analyze the Aqua Claudia aqueduct, built in 52 CE. Results revealed engineering tolerances within 0.1% of modern standards.\n\nUrban planners in water-scarce regions are particularly interested in how Roman engineers managed distribution across elevation gradients without pumps — relying on gravity-fed systems with built-in redundancy.\n\nThe research is informing infrastructure projects in Spain, Morocco, and parts of the American Southwest.',source:'Smithsonian',category:'history',link:'https://smithsonianmag.com',date:'Feb 2025',readTime:5,featured:false},
-    {id:'f7',title:'Why Bilingualism Protects Your Brain — New Neuroimaging Evidence',summary:'MRI studies confirm structural differences in the brains of bilingual individuals, with benefits appearing even in adults who began learning a second language after age 40.',body:'University of Edinburgh researchers analyzed MRI data from 648 bilingual and monolingual adults across five countries, finding structural differences in the anterior cingulate cortex — an area linked to attention and executive function.\n\nCritically, even adults who began learning a second language after 40 showed partial neuroprotective effects. The study controlled for education level, socioeconomic status, and general cognitive activity.\n\nLanguage learning platforms are incorporating these findings into their research roadmaps, with several clinical partnerships now underway.',source:'Nature',category:'language',link:'https://nature.com',date:'Feb 2025',readTime:4,featured:false},
-    {id:'f8',title:'Long-Form Podcasting is Back — and Gen Z is Driving It',summary:'Amid short-video saturation, audio podcasts over 60 minutes are seeing a listener resurgence — driven by audiences seeking immersive, distraction-free depth.',body:'Spotify\'s Q4 2024 data shows a 28% increase in per-session listening time for podcasts over 90 minutes among listeners aged 18–26. The trend contradicts assumptions that younger audiences prefer shorter content.\n\nCreators across science, history, and business are dominating growth charts. Analysts attribute this to a "depth premium" — audiences exhausted by algorithmic content seeking substance and continuity.\n\nAdvertisers are following, with CPM rates for long-form podcast slots now rivaling premium streaming placements.',source:'Variety',category:'media',link:'https://variety.com',date:'Jan 2025',readTime:3,featured:false},
-    {id:'f9',title:'Climate Finance Hits Record $1.3 Trillion — but the Wrong Places',summary:'Global climate investment reached an all-time high, but developing nations say funds are flowing to the wrong priorities and moving too slowly.',body:'A UN Environment Programme report tracks $1.3 trillion in climate-related financial flows in 2024, a 12% increase year-over-year. Growth is driven primarily by renewable energy investment in China, the US, and EU.\n\nOnly 16% of tracked funds reached developing nations, despite these countries bearing disproportionate climate impact. Adaptation funding for sea walls, drought-resistant agriculture, and infrastructure hardening remains dramatically underfunded.\n\nClimate economists argue the gap isn\'t a shortage of capital, but a mismatch between risk appetite and opportunity.',source:'Reuters',category:'economy',link:'https://reuters.com',date:'Mar 2025',readTime:5,featured:false},
-    {id:'f10',title:'The Science of Sleep Regularity: More Important Than Duration',summary:'New Harvard data finds that going to bed at consistent times predicts health outcomes more reliably than total hours slept — and irregular schedules carry serious metabolic risks.',body:'A Harvard Medical School study tracking 12,000 participants over five years finds that sleep regularity — consistent bedtimes and wake times — predicts health outcomes more reliably than total hours slept.\n\nParticipants with irregular schedules had 30% higher rates of metabolic syndrome, even when averaging 7–8 hours per night.\n\nWearable data from Oura Ring and Apple Watch users contributed to the dataset, marking one of the first large-scale studies to integrate consumer health device data with clinical outcomes.',source:'Science Daily',category:'health',link:'https://sciencedaily.com',date:'Feb 2025',readTime:4,featured:false},
+    {id:'f1',title:'The Future of Remote Work: What Every Professional Needs to Know',summary:'Hybrid models are reshaping how companies recruit, manage performance, and maintain culture. Async-first organizations report higher output and lower attrition.',body:'Hybrid work has become dominant, with 60%+ of knowledge workers splitting time between home and office. HR leaders are redesigning policies around digital-first communication and outcome-based metrics.\n\nRetention data shows employees with genuine schedule flexibility are 23% less likely to leave within 12 months.',source:'HBR',category:'career',link:'https://hbr.org',date:'Mar 2025',readTime:4,featured:false,profBoost:false},
+    {id:'f2',title:'AI is Rewriting What It Means to Be a Software Engineer',summary:'LLMs now write, review, and deploy production code at scale — changing developer workflows and what companies expect from engineering talent.',body:'GitHub reports over 50% of new code in Copilot-enabled repos now starts from AI suggestions. Senior engineers are valued increasingly for judgment in reviewing AI output over raw coding speed.',source:'MIT Technology Review',category:'tech',link:'https://technologyreview.com',date:'Mar 2025',readTime:5,featured:false,profBoost:false},
+    {id:'f3',title:'Global Economy Slows as Rate Cuts Remain Off the Table',summary:'Central banks are holding rates higher for longer. The IMF now expects 2.8% global growth in 2025 — below earlier forecasts.',body:'The IMF revised its global growth forecast down to 2.8% for 2025. Core services prices remain sticky, keeping rate cuts off the table for most of the year.',source:'The Economist',category:'economy',link:'https://economist.com',date:'Mar 2025',readTime:5,featured:false,profBoost:false},
+    {id:'f4',title:'Breakthrough Alzheimer\'s Therapy Shows 35% Reduction in Decline',summary:'A dual-mechanism antibody therapy targeting both amyloid plaques and tau proteins shows remarkable results in Phase III trials.',body:'Researchers announced results from a 3,200-person trial showing measurable cognitive preservation in early-stage Alzheimer\'s patients. Regulatory review is expected to begin this year.',source:'Science Daily',category:'health',link:'https://sciencedaily.com',date:'Feb 2025',readTime:4,featured:false,profBoost:false},
+    {id:'f5',title:'Project Managers Who Understand AI Are Getting Promoted Faster',summary:'PMI\'s latest report identifies AI integration literacy as the fastest-growing skill requirement — widening the gap between those who have it and those who don\'t.',body:'Tools like Microsoft Copilot for Project and Notion AI are in use at 40%+ of enterprise organizations. New micro-credentials from PMI and Coursera are emerging rapidly.',source:'PMI Pulse',category:'career',link:'https://pmi.org',date:'Mar 2025',readTime:4,featured:false,profBoost:false},
+    {id:'f6',title:'Ancient Rome\'s Infrastructure: What Modern Cities Are Learning',summary:'Archaeological analysis of Roman aqueducts reveals engineering principles that drought-prone cities are actively applying today.',body:'A Cambridge-Politecnico di Milano project revealed engineering tolerances within 0.1% of modern standards. The research is informing infrastructure projects in Spain, Morocco, and the American Southwest.',source:'Smithsonian',category:'history',link:'https://smithsonianmag.com',date:'Feb 2025',readTime:5,featured:false,profBoost:false},
+    {id:'f7',title:'Why Bilingualism Protects Your Brain — New Neuroimaging Evidence',summary:'MRI studies confirm structural differences in bilingual brains, with benefits appearing even in adults who began learning a second language after age 40.',body:'University of Edinburgh researchers found structural differences in the anterior cingulate cortex — linked to attention and executive function — in bilingual adults.',source:'Nature',category:'language',link:'https://nature.com',date:'Feb 2025',readTime:4,featured:false,profBoost:false},
+    {id:'f8',title:'Long-Form Podcasting is Back — and Gen Z is Driving It',summary:'Audio podcasts over 60 minutes are seeing a listener resurgence as audiences seek immersive, distraction-free depth.',body:'Spotify data shows a 28% increase in per-session listening time for podcasts over 90 minutes among 18–26 year olds. A "depth premium" is driving the trend.',source:'Variety',category:'media',link:'https://variety.com',date:'Jan 2025',readTime:3,featured:false,profBoost:false},
+    {id:'f9',title:'Climate Finance Hits Record $1.3 Trillion — but the Wrong Places',summary:'Global climate investment hit an all-time high, but developing nations say funds are flowing to the wrong priorities.',body:'UN Environment Programme tracks $1.3 trillion in climate flows in 2024, but only 16% reached developing nations despite them bearing disproportionate climate impact.',source:'Reuters',category:'economy',link:'https://reuters.com',date:'Mar 2025',readTime:5,featured:false,profBoost:false},
+    {id:'fa',title:'The Science of Sleep Regularity: More Important Than Duration',summary:'New Harvard data finds consistent sleep timing predicts health outcomes more reliably than total hours slept.',body:'Harvard tracked 12,000 participants over five years: sleep regularity outperforms sleep duration in predicting metabolic syndrome risk.',source:'Science Daily',category:'health',link:'https://sciencedaily.com',date:'Feb 2025',readTime:4,featured:false,profBoost:false},
   ];
-  if(filter==='all')return shuffle(pool);
-  const filtered=pool.filter(a=>a.category===filter);
-  return filtered.length?shuffle(filtered):shuffle(pool);
+  // apply profession boost to fallback too
+  const boosts=p?getProfessionBoosts():[];
+  const res=pool.map(a=>({...a,profBoost:boosts.includes(a.category)}));
+  if(filter==='all') return res;
+  const filt=res.filter(a=>a.category===filter);
+  return filt.length?filt:res;
 }
 
-/* ─── UTILS ─── */
-function getCat(id){return ALL_CATS.find(c=>c.id===id)||{icon:'📰',tag:'tag-default',label:id||'News'};}
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function getCat(id){return CATS.find(c=>c.id===id)||{icon:'📰',tg:'tg-default',label:id||'News'};}
 function x(s=''){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function strip(h=''){const d=document.createElement('div');d.innerHTML=h;return d.textContent||d.innerText||'';}
+function strip(h=''){const d=document.createElement('div');d.innerHTML=h;return(d.textContent||d.innerText||'').replace(/\s+/g,' ').trim();}
 function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
 let ttm;
-function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(ttm);ttm=setTimeout(()=>t.classList.remove('show'),2800);}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');clearTimeout(ttm);
+  ttm=setTimeout(()=>t.classList.remove('show'),3000);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal('noteModal');closeModal('authModal');}});
 </script>
 </body>
 </html>
